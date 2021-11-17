@@ -27,8 +27,8 @@ image_l = np.zeros([size, size, 3])
 pixels_l = np.zeros([size, size, 2])
 for i in range(size):
     for j in range(size):
-        pixels_l[i, j, 0] = 2*dom*i/(size-1) - dom + dom/size
-        pixels_l[i, j, 1] = 2*dom*j/(size-1) - dom + dom/size
+        pixels_l[i, j, 0] = 2*dom*i/(size-1) - dom
+        pixels_l[i, j, 1] = 2*dom*j/(size-1) - dom
 
 
 # loop over tracking back pixels from image_l to image_s via lens eqn
@@ -36,8 +36,8 @@ for i in range(size):
 for i in range(size):
     for j in range(size):
         # based on pixel position get reduced coords. r_1 and r_2
-        r1 = 2*dom*i/(size-1) - dom + dom/size
-        r2 = 2*dom*j/(size-1) - dom + dom/size
+        r1 = 2*dom*i/(size-1) - dom
+        r2 = 2*dom*j/(size-1) - dom
         # use lens equation to get position on image_s of this pixel
         s1 = r1 - ((1 - eps)*r1)/np.sqrt(rc**2 + (1 - eps)*r1**2 + (1 + eps)*r2**2)
         s2 = r2 - ((1 + eps)*r2)/np.sqrt(rc**2 + (1 - eps)*r1**2 + (1 + eps)*r2**2)
