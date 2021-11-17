@@ -1,8 +1,10 @@
-# First attetmps at gravitational lensing, VERY INEFFICIENT, INITIAL VERSION
+# Image Test with initial code
+# NB requires Pillow library
 
 # Import modules
 import numpy as np
 import matplotlib.pyplot as plt
+from PIL import Image
 
 # %%
 
@@ -10,12 +12,15 @@ import matplotlib.pyplot as plt
 rc = 0.7
 eps = 0
 dom = 1  # abs() of domain of r values (normally -1, 1 --> 1)
-size = 21  # odd for test
 
-# set up an image of the source. For simplest test, a single pixel at centre
-# As for the initial test, use 21 pixels, empty apart from centre pixel
-image_s = np.zeros([size, size, 3])  # allow for RGB to start with
-image_s[int((size-1)/2), int((size-1)/2), 0] = 1
+# read in the image of the source
+# NB set correct Working directory
+image_s = Image.open('attempts\\images\\M83 my own image.jpg')
+# change it to a numpy array
+image_s = np.array(image_s)
+
+# from it, extract size:
+size = len(image_s[:, 0 , 0])
 
 # plot that image
 plt.imshow(image_s)
