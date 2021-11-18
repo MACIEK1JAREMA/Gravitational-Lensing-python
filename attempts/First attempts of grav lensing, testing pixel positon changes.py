@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 rc = 0.7
 eps = 0
 dom = 1  # abs() of domain of r values (normally -1, 1 --> 1)
-size = 201  # odd for test
+size = 21  # odd for test
 
 # set up an image of the source. For simplest test, a single pixel at centre
 # As for the initial test, use 21 pixels, empty apart from centre pixel
@@ -27,16 +27,16 @@ image_l = np.zeros([size, size, 3])
 pixels_l = np.zeros([size, size, 2])
 for i in range(size):
     for j in range(size):
-        pixels_l[i, j, 0] = 2*dom*i/(size-1) - dom
-        pixels_l[i, j, 1] = 2*dom*j/(size-1) - dom
+        pixels_l[i, j, 0] = (i - ((size-1)/2)) * dom * (2/(size-1)) + dom/(size-1)
+        pixels_l[i, j, 1] = (j - ((size-1)/2)) * dom * (2/(size-1)) + dom/(size-1)
 
 # loop over tracking back pixels from image_l to image_s via lens eqn
 # Inefficiently for now (initial attempts)
 for i in range(size):
     for j in range(size):
         # based on pixel position get reduced coords. r_1 and r_2
-        r1 = 2*dom*i/(size-1) - dom
-        r2 = 2*dom*j/(size-1) - dom
+        r1 = (i - ((size-1)/2)) * dom * (2/(size-1)) + dom/(size-1)
+        r2 = (j - ((size-1)/2)) * dom * (2/(size-1)) + dom/(size-1)
         # use lens equation to get position on image_s of this pixel
         s1 = r1 - ((1 - eps)*r1)/np.sqrt(rc**2 + (1 - eps)*r1**2 + (1 + eps)*r2**2)
         s2 = r2 - ((1 + eps)*r2)/np.sqrt(rc**2 + (1 - eps)*r1**2 + (1 + eps)*r2**2)
@@ -54,3 +54,5 @@ for i in range(size):
 plt.figure()
 # plot the resulting image
 plt.imshow(image_l)
+
+# %%

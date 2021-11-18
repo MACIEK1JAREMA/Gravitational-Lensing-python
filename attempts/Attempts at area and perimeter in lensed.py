@@ -1,8 +1,9 @@
-# First attetmps at gravitational lensing, VERY INEFFICIENT, INITIAL VERSION
+# Testing lensing and finding areas + permieters
 
 # Import modules
 import numpy as np
 import matplotlib.pyplot as plt
+from skimage.measure import label, regionprops
 
 # %%
 
@@ -54,3 +55,24 @@ for i in range(size):
 plt.figure()
 # plot the resulting image
 plt.imshow(image_l)
+
+# find the area of the ending lensed image in terms of pixels:
+nonzero_number = len(np.nonzero(image_l[:, :, 0]))  # only reds for now as source is only red
+
+# The area of source is one pixel.
+
+try:
+    # find the perimeter of the new shape:
+    image_shape = image_l[:, :, 0] != 0
+    region = regionprops(image_shape.astype(int))
+    perim = region[0].perimeter   # Not sure if I will use this yet, as it extrapolates by itself
+    
+    # find the ratio of area to perimeter of it:
+    ratio = perim/nonzero_number
+    
+    # return that to user:
+    print('Ratio of perim to area of lensed shape is {:.4f}'.format(ratio))
+except IndexError:
+    # shape has been lensed completely outside of the initial image
+    pass
+
