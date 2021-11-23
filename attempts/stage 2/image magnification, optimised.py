@@ -1,9 +1,12 @@
+# chessboard pattern for magnification
+
 # Attempts at vectorising the lensing process
 
 # import modules
 import numpy as np
 import matplotlib.pyplot as plt
 import timeit
+from PIL import Image
 
 # %%
 
@@ -16,10 +19,14 @@ eps = 0
 dom = 1  # abs() of domain of r values (normally -1, 1 --> 1)
 size = 201  # odd for test
 
-# set up an image of the source. For simplest test, a single pixel at centre
-# As for the initial test
-image_s = np.zeros([size, size, 3])  # allow for RGB from the start
-image_s[int((size-1)/2), int((size-1)/2), 0] = 1
+# read in the image of the source
+# NB set correct Working directory
+image_s = Image.open('attempts\\images\\M83 my own image.jpg')
+# change it to a numpy array
+image_s = np.array(image_s)
+
+# from it, extract size:
+size = len(image_s[:, 0 , 0])
 
 # plot that image
 plt.imshow(image_s)
@@ -59,6 +66,9 @@ index_2 = index_2.astype(int)
 
 # copy the data from source image at these indexes over to lens image array
 image_l[:, :, :] = image_s[index_1, index_2, :]
+
+# correct for RGB going range 0, 1 for imshow
+image_l *= 1/256
 
 
 plt.figure()

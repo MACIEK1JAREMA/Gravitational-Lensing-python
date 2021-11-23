@@ -17,7 +17,7 @@ start = timeit.default_timer()
 rc = 0.7
 eps = 0
 dom = 1  # abs() of domain of r values (normally -1, 1 --> 1)
-size = 601  # odd for test
+size = 401  # odd for test
 
 # number of displaed pixels
 disp_max = 30
@@ -97,6 +97,10 @@ disps = [i for i in range(-disp_max, disp_max+1, 1)]
 fig = plt.figure()
 ax = fig.gca()
 ax.plot(disps, ratio_list)
+
+# set up its axis
+ax.set_ylabel(r'$displacement \ from \ centre \ [pixels]$')
+ax.set_xlabel(r'$\frac{image \ object \ perimeter \ [pixels]}{image \ object \ area \ [pixels]}$')
 
 
 # return time to run
