@@ -5,24 +5,28 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage.measure import label, regionprops
+import timeit
 
 # %%
+
+# start the timer
+start = timeit.default_timer()
 
 # set up some initial parameters
 rc = 0.7
 eps = 0
 dom = 1  # abs() of domain of r values (normally -1, 1 --> 1)
-size = 251  # odd for test
+size = 201  # odd for test
 
 # number of displaed pixels
-disp_max = 15
+disp_max = 8
 
 # set up a list to store ratio of perimeter to area
 ratio_list = []
 
 
 # loop over different number of displacements
-for disp in range(-disp_max, disp_max, 1):
+for disp in range(-disp_max, disp_max+1, 1):
 
     # set up an image of the source. For simplest test, a single pixel at centre
     # As for the initial test, use 21 pixels, empty apart from centre pixel
@@ -88,3 +92,8 @@ disps = [i for i in range(-disp_max, disp_max, 1)]
 fig = plt.figure()
 ax = fig.gca()
 ax.plot(disps, ratio_list)
+
+
+# return time to run
+stop = timeit.default_timer()
+print('Time to run was: {:.4f}'.format(stop - start) + ' s')
