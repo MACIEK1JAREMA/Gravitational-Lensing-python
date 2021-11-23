@@ -17,11 +17,11 @@ start = timeit.default_timer()
 rc = 0.7
 eps = 0
 dom = 1  # abs() of domain of r values (normally -1, 1 --> 1)
-size = 201  # odd for test
 
 # read in the image of the source
 # NB set correct Working directory
-image_s = Image.open('attempts\\images\\M83 my own image.jpg')
+# This is an image I have taken myself of M83, therefore no copyright
+image_s = Image.open('attempts\\images\\my image M65.jpg')
 # change it to a numpy array
 image_s = np.array(image_s)
 
@@ -61,8 +61,8 @@ index_1 = np.floor((s1 + dom)/p_width)
 index_2 = np.floor((s2 + dom)/p_width)
 
 # change them to integers
-index_1 = index_1.astype(int)
-index_2 = index_2.astype(int)
+index_1 = index_1.astype(int).transpose()
+index_2 = index_2.astype(int).transpose()
 
 # copy the data from source image at these indexes over to lens image array
 image_l[:, :, :] = image_s[index_1, index_2, :]

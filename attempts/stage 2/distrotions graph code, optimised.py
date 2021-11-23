@@ -62,8 +62,8 @@ for disp in range(-disp_max, disp_max+1, 1):
     index_2 = np.floor((s2 + dom)/p_width)
     
     # change them to integers
-    index_1 = index_1.astype(int)
-    index_2 = index_2.astype(int)
+    index_1 = index_1.astype(int).transpose()
+    index_2 = index_2.astype(int).transpose()
     
     # copy the data from source image at these indexes over to lens image array
     image_l[:, :, :] = image_s[index_1, index_2, :]
