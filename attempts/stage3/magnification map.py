@@ -4,6 +4,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
+from matplotlib.colors import LogNorm
 from PIL import Image
 import timeit
 import attempts.stage3.function_lens as lensing
@@ -17,7 +18,7 @@ start = timeit.default_timer()
 rc = 0.7
 eps = 0
 dom = 1  # abs() of domain of r values (normally -1, 1 --> 1)
-size = 300  # don;t set higher than 4096, cant mark uniquely in RGB
+size = 200  # don;t set higher than 4096, cant mark uniquely in RGB
 
 # set up an image of the source, empty, then mark each pixel uniquely in RGB
 image_s = np.zeros([size, size, 3])
@@ -100,14 +101,21 @@ while stop is False:
 # for pcolormesh plot, set up x and y arrays:
 x = np.arange(0, size, 1)
 y = np.arange(0, size, 1)
-
 xg, yg = np.meshgrid(x, y)
 
 # now plot it as a colour map
-plot = plt.pcolormesh(xg, yg, results, cmap=cm.jet)
+plt.figure()
+indexes = np.where(results==0)
+results[indexes] = 0.01  # set 0s to 0.001 to allow for log scaling to work
+plot = plt.pcolormesh(xg, yg, results, cmap=cm.jet, norm=LogNorm(0.01, results.max()))
 
 # set a colourbar
 plt.colorbar(plot)
+
+# do the plot with imshow
+
+plt.figure()
+plt.imshow(results)
 
 # return time to run
 stop = timeit.default_timer()
