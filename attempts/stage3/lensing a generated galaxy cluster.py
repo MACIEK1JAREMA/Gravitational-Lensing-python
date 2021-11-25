@@ -17,16 +17,16 @@ rc = 0.7
 eps = 0
 dom = 10  # abs() of domain of r values (normally -1, 1 --> 1)
 size = 400
-max_a = 5  # maximum galaxy scale-length, in pixels
+max_a = 0.4  # maximum galaxy scale-length, in pixels
 # set max minor axis in pixels
-minor_max = 30
+minor_max = 23
 
 # ############################################################################
 # Generate a random galaxy cluser
 # ############################################################################
 
 # choose number of galaxies to generate
-gal_N = 20
+gal_N = 25
 
 # being  an empty image array, with RGB
 image = np.zeros((size, size, 3))
@@ -44,10 +44,10 @@ for gal in range(gal_N):
     x_centr, y_centr = np.random.randint(0, size), np.random.randint(0, size)
     
     # randomly generate a, in units of pixels:
-    a = np.random.randint(1, max_a)
+    a = np.random.rand() * max_a
     
     # randomly generate minor and major axis
-    minor = np.random.randint(1, minor_max)
+    minor = np.random.randint(1, minor_max+1)
     major = np.random.randint(minor, 6*minor_max) # ensure, major is larger than minor
     
     # randomly generate angle of major axis to horizontal, in radians
@@ -69,7 +69,7 @@ for gal in range(gal_N):
                 # its in ellipse, add its pixel data accordinly
                 # careful about image edges
                 try:
-                    image[x_centr+i, y_centr+j, :] = tuple(flux * np.exp(-np.sqrt((((x*np.cos(theta) - y*np.sin(theta))/minor)**2 + ((x*np.sin(theta) + y*np.cos(theta))/major)**2))/a) for flux in f0)
+                    image[x_centr+i, y_centr+j, :] += tuple(flux * np.exp(-np.sqrt((((x*np.cos(theta) - y*np.sin(theta))/minor)**2 + ((x*np.sin(theta) + y*np.cos(theta))/major)**2))/a) for flux in f0)
                 except IndexError:
                     pass
 
