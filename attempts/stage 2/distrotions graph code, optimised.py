@@ -1,7 +1,5 @@
 # Optimised version of creating the distortions graph
 
-
-
 # Import modules
 import numpy as np
 import matplotlib.pyplot as plt
@@ -32,7 +30,7 @@ for disp in range(-disp_max, disp_max+1, 1):
     # set up an image of the source. For simplest test, a single pixel at centre
     # As for the initial test, use 21 pixels, empty apart from centre pixel
     image_s = np.zeros([size, size, 3])  # allow for RGB to start with
-    image_s[int((size-1)/2), int((size-1)/2) + disp, 0] = 1
+    image_s[int((size-1)/2) + disp, int((size-1)/2) + disp, 0] = 1
     # image_s[int((size-1)/2) + disp, int((size-1)/2) + disp, 0] = 1  # diagonal
     
     # find the width of each pixel given the domain and size

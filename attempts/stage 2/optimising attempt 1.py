@@ -14,7 +14,7 @@ start = timeit.default_timer()
 rc = 0.7
 eps = 0
 dom = 1  # abs() of domain of r values (normally -1, 1 --> 1)
-size = 201  # odd for test
+size = 21  # odd for test
 
 # set up an image of the source. For simplest test, a single pixel at centre
 # As for the initial test

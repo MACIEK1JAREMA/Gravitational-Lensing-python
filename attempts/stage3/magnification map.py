@@ -15,9 +15,9 @@ import attempts.stage3.function_lens as lensing
 start = timeit.default_timer()
 
 # set up some initial parameters
-rc = 0.7
+rc = 1
 eps = 0
-dom = 1  # abs() of domain of r values (normally -1, 1 --> 1)
+dom = 6  # abs() of domain of r values (normally -1, 1 --> 1)
 size = 200  # don;t set higher than 4096, cant mark uniquely in RGB
 
 # set up an image of the source, empty, then mark each pixel uniquely in RGB
