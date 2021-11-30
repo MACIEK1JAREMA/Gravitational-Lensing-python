@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from skimage.measure import label, regionprops
-import attempts.stage3.function_lens as lensing
+import project.lensing_function as lensing
 import timeit
 
 # %%
@@ -14,10 +14,10 @@ import timeit
 start = timeit.default_timer()
 
 # set up common parameters:
-rc = 0.7
+rc = 0.2
 eps = 0
-size = 201
-dom = 5  # abs() of domain of r values (normally -1, 1 --> 1)
+size = 101
+dom = 2  # abs() of domain of r values (normally -1, 1 --> 1)
 
 # max number of pixels to displace from centre by
 disp_max = 30
@@ -78,7 +78,6 @@ for disp1 in range(-disp_max, disp_max+1, 1):
 # Produce map of magnifications
 # #############################################################################
 
-
 # set up an image of the source, empty, then mark each pixel uniquely in RGB
 image_s = np.zeros([size, size, 3])
 
@@ -107,14 +106,14 @@ image_lensed = lensing.lens(image_s, rc, eps, dom)
 
 
 # set up an array to store numbers of occurances of each marker
-results =  np.zeros([2*disp_max, 2*disp_max])
+results =  np.zeros([size, size])
 
 # set the intial checkers
 cR, cG, cB = 0, 0, 0
 
 # set up a source pixel counter, not to have to deal with base 255 too much
-countx = -disp_max
-county = -disp_max
+countx = 0
+county = 0
 
 # set up a stopping variable
 stop = False
@@ -146,8 +145,12 @@ while stop is False:
         county += 1
     
     # once all pixel combinations were checked, stop the loop
-    if countx == disp_max and county == disp_max:
+    if countx == size-1 and county == size-1:
         stop=True
+
+# cut the results array to size of ratios
+results_cut = results[int((size-1)/2) - disp_max:int((size-1)/2) + disp_max, int((size-1)/2) - disp_max:int((size-1)/2) + disp_max]
+
 
 # #############################################################################
 # Find residuals and plot as a colour map
@@ -156,10 +159,10 @@ while stop is False:
 
 # normalise both results to their maximum value
 ratio_arr *= 1/(np.max(ratio_arr))
-results *= 1/(np.max(results))
+results_cut *= 1/(np.max(results_cut))
 
 # get risiduals
-residuals = ratio_arr - results
+residuals = ratio_arr - results_cut
 
 # plot the colour map
 fig = plt.figure()
@@ -168,7 +171,7 @@ plt.imshow(residuals)
 
 # plot it with pcolormesh too
 fig = plt.figure()
-disps = np.arange(-disp_max, disp_max+1)
+disps = np.arange(0, disp_max*2)
 disps_xg, disps_yg = np.meshgrid(disps, disps)
 plot = plt.pcolormesh(disps_xg, disps_yg, residuals, cmap=cm.jet)
 plt.colorbar(plot)  # set a colourbar
