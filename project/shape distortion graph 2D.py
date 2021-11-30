@@ -1,4 +1,4 @@
-# distortions from perim/area, 2D map
+# # distortions from perim/area, 2D map
 
 # Import modules
 import numpy as np
@@ -17,9 +17,9 @@ start = timeit.default_timer()
 rc = 0.2
 eps = 0
 dom = 1  # abs() of domain of r values (normally -1, 1 --> 1)
-size = 201  # odd for test
+size = 201
 
-# number of displaed pixels
+# max number of pixels displacement
 disp_max = 30
 
 # set up an array to store ratio of perimeter to area in 2D
@@ -37,28 +37,27 @@ for disp1 in range(-disp_max, disp_max+1, 1):
     print('wokred out column ' + str(j) + ' out of ' + str(2*disp_max))
     for disp2 in range(-disp_max, disp_max+1, 1):
         
-        # set up an image of the source. For simplest test, a single pixel
-        image_s = np.zeros([size, size, 3])  # allow for RGB to start with
+        # set up an image of the source,  a single pixel
+        image_s = np.zeros([size, size, 3])
         image_s[int((size-1)/2) + disp1, int((size-1)/2) + disp2, 0] = 1
-        # image_s[int((size-1)/2) + disp, int((size-1)/2) + disp, 0] = 1  # diagonal
         
         # lens it using the written funciton
         image_l = lensing.lens(image_s, rc, eps, dom)
         
         # find the area of the ending lensed image in terms of pixels:
-        nonzero_number = len(np.nonzero(image_l[:, :, 0]))  # only reds for now as source is only red
+        nonzero_number = len(np.nonzero(image_l[:, :, 0]))  # only reds
         # NB The area of source is one pixel.
         
+        # find the perimeteter of shape using inbuilt funciton and get ratio
         try:
-            # find the perimeter of the new shape:
             image_shape = image_l[:, :, 0] != 0
-            region = regionprops(image_shape.astype(int))
-            perim = region[0].perimeter   # Not sure if I will use this yet, as it extrapolates by itself
+            region = regionprops(image_shape.astype(int))  # Matplab translated function
+            perim = region[0].perimeter
             
-            # find the ratio of area to perimeter of it:
+            # find the ratio of area to perimeter of it and set to pixel data 
             ratio = perim/nonzero_number
-            
             ratio_arr[i, j] = ratio
+            
         except IndexError:
             # shape has been lensed completely outside of the initial image
             pass
@@ -68,16 +67,34 @@ for disp1 in range(-disp_max, disp_max+1, 1):
     # update j
     j += 1
 
-# plot the colour map
+# set up a figure, axis
 fig = plt.figure()
-ax = fig.gca()
-plt.imshow(ratio_arr)
+ax1 = fig.add_subplot(121)
+ax2 = fig.add_subplot(122)
 
-# plot it with pcolormesh too
-fig = plt.figure()
+# set up visuals for each axis
+ax1.set_xlabel(r'$x \ displacement \ in \ pixels$')
+ax1.set_ylabel(r'$y \ displacement \ in \ pixels$')
+ax1.set_title(r'$ shape \ distortions \ map $')
+ax1.set_xticks(np.arange(0, size+1, 20))
+ax1.set_yticks(np.arange(0, size+1, 20))
+ax1.set_aspect('equal')
+
+ax2.set_xlabel(r'$x \ displacement \ in \ pixels$')
+ax2.set_ylabel(r'$y \ displacement \ in \ pixels$')
+ax2.set_title(r'$  shape \ distortions \ logarithmic \ map $')
+ax2.set_xticks(np.arange(0, size+1, 20))
+ax2.set_yticks(np.arange(0, size+1, 20))
+ax2.set_aspect('equal')
+
+
+# plot with imshow
+ax1.imshow(ratio_arr)
+
+# plot it on log sclae using pcolormesh, this also needs grids
 disps = np.arange(-disp_max, disp_max+1)
 disps_xg, disps_yg = np.meshgrid(disps, disps)
-plot = plt.pcolormesh(disps_xg, disps_yg, ratio_arr, cmap=cm.jet)
+plot = ax2.pcolormesh(disps_xg, disps_yg, ratio_arr, cmap=cm.jet)
 plt.colorbar(plot)  # set a colourbar
 
 

@@ -14,14 +14,14 @@ import timeit
 start = timeit.default_timer()
 
 # set up common parameters:
-# set up some initial parameters
 rc = 0.7
 eps = 0
+size = 201
 dom = 5  # abs() of domain of r values (normally -1, 1 --> 1)
-size = 201  # odd for test
 
-# number of displaed pixels
+# max number of pixels to displace from centre by
 disp_max = 30
+
 
 # #############################################################################
 # Produce map of distrotions
@@ -107,14 +107,14 @@ image_lensed = lensing.lens(image_s, rc, eps, dom)
 
 
 # set up an array to store numbers of occurances of each marker
-results =  np.zeros([size, size])
+results =  np.zeros([2*disp_max, 2*disp_max])
 
 # set the intial checkers
 cR, cG, cB = 0, 0, 0
 
 # set up a source pixel counter, not to have to deal with base 255 too much
-countx = 0
-county = 0
+countx = -disp_max
+county = -disp_max
 
 # set up a stopping variable
 stop = False
@@ -146,12 +146,8 @@ while stop is False:
         county += 1
     
     # once all pixel combinations were checked, stop the loop
-    if countx == size-1 and county == size-1:
+    if countx == disp_max and county == disp_max:
         stop=True
-
-# cut the results array to size of ratios
-results_cut = results[int((size-1)/2) - disp_max:int((size-1)/2) + disp_max, int((size-1)/2) - disp_max:int((size-1)/2) + disp_max]
-
 
 # #############################################################################
 # Find residuals and plot as a colour map
@@ -160,10 +156,10 @@ results_cut = results[int((size-1)/2) - disp_max:int((size-1)/2) + disp_max, int
 
 # normalise both results to their maximum value
 ratio_arr *= 1/(np.max(ratio_arr))
-results_cut *= 1/(np.max(results_cut))
+results *= 1/(np.max(results))
 
 # get risiduals
-residuals = ratio_arr - results_cut
+residuals = ratio_arr - results
 
 # plot the colour map
 fig = plt.figure()
