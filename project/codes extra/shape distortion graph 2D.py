@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from skimage.measure import label, regionprops
-import attempts.stage3.function_lens as lensing
+import project.lensing_function as lensing
 import timeit
 
 # %%
