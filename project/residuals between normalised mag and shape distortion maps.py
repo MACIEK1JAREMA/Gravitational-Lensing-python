@@ -14,13 +14,13 @@ import timeit
 start = timeit.default_timer()
 
 # set up common parameters:
-rc = 0.2
+rc = 0.3
 eps = 0
 size = 101
-dom = 2  # abs() of domain of r values (normally -1, 1 --> 1)
+dom = 1  # abs() of domain of r values (normally -1, 1 --> 1)
 
 # max number of pixels to displace from centre by
-disp_max = 30
+disp_max = 25
 
 
 # #############################################################################
@@ -153,7 +153,7 @@ results_cut = results[int((size-1)/2) - disp_max:int((size-1)/2) + disp_max, int
 
 
 # #############################################################################
-# Find residuals and plot as a colour map
+# Find residuals and finilise plots
 # #############################################################################
 
 
@@ -164,17 +164,56 @@ results_cut *= 1/(np.max(results_cut))
 # get risiduals
 residuals = ratio_arr - results_cut
 
-# plot the colour map
-fig = plt.figure()
-ax = fig.gca()
-plt.imshow(residuals)
 
-# plot it with pcolormesh too
+# set up figure and subplot axis
 fig = plt.figure()
+ax1 = fig.add_subplot(141)
+ax2 = fig.add_subplot(142)
+ax3 = fig.add_subplot(143)
+ax4 = fig.add_subplot(144)
+
+# set up visuals for each subplot axis:
+ax1.set_xlabel(r'$x \ pixel \ index$')
+ax1.set_ylabel(r'$y \ pixel \ index$')
+ax1.set_title(r'$ shape \ distortion \ map $')
+ax1.set_xticks(np.arange(0, 2*disp_max, 5))
+ax1.set_yticks(np.arange(0, 2*disp_max, 5))
+ax1.set_aspect('equal')
+
+ax2.set_xlabel(r'$x \ pixel \ index$')
+ax2.set_ylabel(r'$y \ pixel \ index$')
+ax2.set_title(r'$ magnification \ map $')
+ax2.set_xticks(np.arange(0, 2*disp_max, 5))
+ax2.set_yticks(np.arange(0, 2*disp_max, 5))
+ax2.set_aspect('equal')
+
+ax3.set_xlabel(r'$x \ pixel \ index$')
+ax3.set_ylabel(r'$y \ pixel \ index$')
+ax3.set_title(r'$ residuals \ map $')
+ax3.set_xticks(np.arange(0, 2*disp_max, 5))
+ax3.set_yticks(np.arange(0, 2*disp_max, 5))
+ax3.set_aspect('equal')
+
+ax4.set_xlabel(r'$x \ pixel \ index$')
+ax4.set_ylabel(r'$y \ pixel \ index$')
+ax4.set_title(r'$ residuals \ map \ on \ log \ scale $')
+ax4.set_xticks(np.arange(0, 2*disp_max, 5))
+ax4.set_yticks(np.arange(0, 2*disp_max, 5))
+ax4.set_aspect('equal')
+
+# plot the normalised - shape distortion map and magnification map
+ax1.imshow(ratio_arr)
+ax2.imshow(results_cut)
+
+# plot the colour map
+ax3.imshow(residuals)
+
+# plot it  on logscale using pcolormesh, with needed grids for this
 disps = np.arange(0, disp_max*2)
 disps_xg, disps_yg = np.meshgrid(disps, disps)
-plot = plt.pcolormesh(disps_xg, disps_yg, residuals, cmap=cm.jet)
-plt.colorbar(plot)  # set a colourbar
+
+plot = ax4.pcolormesh(disps_xg, disps_yg, residuals, cmap=cm.jet)
+plt.colorbar(plot, fraction=0.045)  # set a colourbar
 
 
 # return time to run
