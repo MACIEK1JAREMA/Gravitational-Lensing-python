@@ -106,7 +106,7 @@ def init():
 
 
 # set up a function to animate uisng FuctAnimate
-def animate(i):    
+def animate(i):
     # update the x values
     x = [xs_anim[i], xp_anim[i]]
     y = [0, 0]
@@ -126,6 +126,6 @@ ani = animation.FuncAnimation(fig, animate, np.arange(1, len(solution)),
 
 # for all time find the CoM position in x and plot to check
 # should not change from 0
-#x_cm = (M*xs_anim + m*xp_anim)/(M + m)
-#plt.figure()
-#plt.plot(x_cm)
+x_cm = (M*xs_anim + m*xp_anim)/(M + m)
+plt.figure()
+plt.plot(x_cm)
