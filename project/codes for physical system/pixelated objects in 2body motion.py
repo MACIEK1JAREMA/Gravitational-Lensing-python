@@ -9,6 +9,7 @@ import scipy
 from scipy import integrate
 import project.lensing_function as lensing
 import matplotlib.widgets as widgets
+from scipy.signal import find_peaks
 
 # %%
 
@@ -28,8 +29,8 @@ def quit_resp(event):
 # start up an empty source image and lensing parametrers
 size = 200
 eps = 0
-rc = 0.05
-dom = 2
+rc = 0.15
+dom = 6
 
 # #############################################################################
 # simulation of 2 bodies orbiting in plane, for centre positions
@@ -44,9 +45,10 @@ maxR = 1e11  # max planet disp from star, in SI
 # define star and planet sizes in pixels:
 size_s = 10
 size_p = 7
+size_source = 2e11  # size of the source plane
 
 # from size of max orbit get pixel size to scale down
-p_width = maxR/size
+p_width = size_source/size
 
 # set initial parameters of the 2 bodies in SI
 xs = -maxR/2
@@ -63,7 +65,7 @@ init_cond = [xs, ys, xp, yp, vxs, vys, vxp, vyp]  # put into a list
 # get time array and needed values
 year = 3.156e7
 t_max = 1 * year
-t_number = 1000
+t_number = 500
 t_arr = np.linspace(0, t_max, t_number)
 dt = t_arr[-1] - t_arr[-2]
 
@@ -113,8 +115,8 @@ yp_anim = solution[:, 3]
 # set up a figure and axis on which to plot the resulting simulation
 fig = plt.figure()
 ax = plt.axes([0.1, 0.1, 0.8, 0.8])
-ax.set_xlim(-maxR, maxR)
-ax.set_ylim(-maxR, maxR)
+ax.set_xlim(-size_source, size_source)
+ax.set_ylim(-size_source, size_source)
 plt.sca(ax)
 plt.xticks([])  # take off the axis ticks for both, no need for images
 plt.yticks([])
@@ -138,7 +140,7 @@ ax_time.text(0.05, 0.01, '', transform=ax.transAxes)
 switchoff = False
 
 # loop over the simulation result values and plot as animation, wiht pixels
-for i in range(len(t_arr)):
+for t_index in range(len(t_arr)):
     
     # clear the axis
     ax.cla()
@@ -148,12 +150,12 @@ for i in range(len(t_arr)):
     image_s = np.zeros((size, size, 3))
     
     # get the current x values for planet and star
-    x = [xs_anim[i], xp_anim[i]]
+    x = [xs_anim[t_index], xp_anim[t_index]]
     
     # scale down to domain and find which pixels these lie in
     # NB y index is always half way up
-    index_s = np.floor((x[0] + maxR/2)/p_width)
-    index_p = np.floor((x[1] + maxR/2)/p_width) - 1  # zero-indexing
+    index_s = np.floor((x[0] + size_source/2)/p_width)
+    index_p = np.floor((x[1] + size_source/2)/p_width) - 1  # zero-indexing
     index_s = index_s.astype(int).transpose() # change them to integers
     index_p = index_p.astype(int).transpose()
     
@@ -162,9 +164,9 @@ for i in range(len(t_arr)):
     
     # check which body is in front when in line, using the y data:
     if abs(index_s + size_s) > abs(index_p - size_p) and abs(index_s - size_s) < abs(index_p + size_p):
-        if yp_anim[i] < ys_anim[i]:
+        if yp_anim[t_index] < ys_anim[t_index]:
             pfront = False
-        elif yp_anim[i] > ys_anim[i]:
+        elif yp_anim[t_index] > ys_anim[t_index]:
             pfront = True
         else:
             pass
@@ -218,7 +220,7 @@ for i in range(len(t_arr)):
     ax.imshow(image_lens/255)
     
     # plot the new time too:
-    ax_time.text(0.01, 0.2, 'time = {:.2f} yrs'.format(t_arr[i]/year))
+    ax_time.text(0.01, 0.2, 'time = {:.2f} yrs'.format(t_arr[t_index]/year))
     
     # check the quit command:
     if switchoff:
@@ -230,17 +232,39 @@ for i in range(len(t_arr)):
 
 # for all time find the CoM position in x and plot to check
 # should not change from 0
-x_cm = (M*xs_anim + m*xp_anim)/(M + m)
-fig_cm = plt.figure()
-ax_cm = fig_cm.gca()
-ax_cm.set_xlabel('time step index')
-ax_cm.set_ylabel(r'$x_{cm}$')
-ax_cm.plot(x_cm)
+#x_cm = (M*xs_anim + m*xp_anim)/(M + m)
+#fig_cm = plt.figure()
+#ax_cm = fig_cm.gca()
+#ax_cm.set_xlabel('time step index')
+#ax_cm.set_ylabel(r'$x_{cm}$')
+#ax_cm.plot(x_cm)
 
-plt.figure()
-plt.plot(xs_anim, ys_anim)
-plt.plot(xp_anim, yp_anim)
+# plot the motion of the two objects in the x-y plane
+#plt.figure()
+#plt.plot(xs_anim, ys_anim)
+#plt.plot(xp_anim, yp_anim)
+
+# set up a figure, axis and visuals for the light curve
+fig_lc = plt.figure()
+ax_lc = fig_lc.gca()
+ax_lc.set_xlabel('time [years]')
+ax_lc.set_ylabel(r'$L_{bol} [RGB \ sum]$')
+
+# plot the obtained light curve:
+ax_lc.plot(t_arr[:len(lumin_bol)]/year, lumin_bol)
+
+# from the found L_{bol} extract the positions of peaks and plot these on:
+lumin_bol = np.array(lumin_bol)
+peak_indexes = find_peaks(lumin_bol, height=1)[0]
+lum_maxima = lumin_bol[peak_indexes]
+ax_lc.plot(t_arr[peak_indexes]/year, lum_maxima, 'r*')
 
 
-plt.figure()
-plt.plot(t_arr[:len(lumin_bol)], lumin_bol)
+# find the ratio of their heights and print to user
+for i in range(int(np.floor(len(lum_maxima)/2))):
+    if i % 2 == 0:
+        print(lum_maxima[2*i]/lum_maxima[2*i + 1])
+    else:
+        print(lum_maxima[2*i+1]/lum_maxima[2*i])
+
+
