@@ -13,24 +13,15 @@ import matplotlib.animation as animation
 
 # %%
 
-# set up some initial parameters for lensing
-rc = 0.3
-eps = 0
-size = 200
-dom = 4  # abs() of domain of r values (normally -1, 1 --> 1)
-maxR = 1e11  # max planet disp from star, in SI
-
 # #############################################################################
 # simulation of 2 bodies orbiting in plane
 # #############################################################################
-
-# start up an empty source image
-image_s = np.zeros((size, size, 3))
 
 # set up 2 body system parameters in SI
 M = 2e30
 m = 2e30
 G = 6.67e-11
+maxR = 1e11  # max planet disp from star, in SI
 
 # set initial parameters of the 2 bodies in SI
 xs = -maxR/2
