@@ -1,4 +1,4 @@
-# low mass transit lens, no animation.
+# planet + star lensing, investigation for possible correlation
 
 # import modules
 import numpy as np
@@ -17,10 +17,10 @@ import timeit
 start = timeit.default_timer()
 
 # start up an empty source image and lensing parametrers
-size = 300
+size = 200
 eps = 0
-rc = 0.15
-dom = 6
+rc = 0.1
+dom = 5
 
 # set up simualtion time parameters
 year = 3.156e7  # numerical factor
@@ -152,7 +152,7 @@ for t_index in range(len(t_arr)):
             else:
                 # its in ellipse, add its pixel data accordinly
                 try:  # careful about image edges
-                    image_s[int(size/2) - size_s + i, index_s  - size_s + j, :] += tuple((253, 225, 39))
+                    image_s[int(size/2) - size_s + i, index_s  - size_s + j, :] += tuple((255, 255, 255))
                 except IndexError:
                     pass
     
@@ -170,7 +170,7 @@ for t_index in range(len(t_arr)):
                 try:  # careful about image edges
                     # check if overcasting the sun:
                     if pfront:
-                        image_s[int(size/2) - size_p + i, index_p - size_p + j, :] = tuple((68, 25, 25))
+                        image_s[int(size/2) - size_p + i, index_p - size_p + j, :] = tuple((0, 0, 0))
                     else:
                         pass
                 except IndexError:
@@ -211,31 +211,17 @@ ax_lc = fig_lc.gca()
 ax_lc.set_xlabel('time [years]')
 ax_lc.set_ylabel(r'$L_{bol} [RGB \ sum]$')
 
-# plot the obtained light curves, reduced from their mean:
-lumin_bol_r = lumin_bol - np.mean(lumin_bol)
-lumin_bol_lensed_r = lumin_bol_lensed - np.mean(lumin_bol_lensed)
-lumin_bol_lensed_r = lumin_bol_lensed_r - lumin_bol_lensed_r[0]  # match the two
-lumin_bol_r = lumin_bol_r - lumin_bol_r[0]
-ax_lc.plot(t_arr[:len(lumin_bol)]/year, lumin_bol_r)
-ax_lc.plot(t_arr[:len(lumin_bol_lensed_r)]/year, lumin_bol_lensed_r)
+# turn resulting lists into arrays:
+lumin_bol = np.array(lumin_bol)
+lumin_bol_lensed = np.array(lumin_bol_lensed)
 
-
-# from the found L_{bol} extract the positions of peaks and plot these
-
-# for transit data:
-#lumin_bol_r = np.array(lumin_bol_r)
-#peak_indexes = find_peaks(lumin_bol_r, height=1)[0]
-#lum_maxima_r = lumin_bol_r[peak_indexes]
-#ax_lc.plot(t_arr[peak_indexes]/year, lum_maxima_r, 'r*')
-
-# for lensed data:
-#lumin_bol_lensed_r = np.array(lumin_bol_lensed_r)
-#peak_indexes_lensed = find_peaks(lumin_bol_lensed_r, height=1)[0]
-#lum_lensed_maxima_r = lumin_bol_lensed_r[peak_indexes_lensed]
-#ax_lc.plot(t_arr[peak_indexes_lensed]/year, lum_lensed_maxima_r, 'g*')
+# plot the obtained light curves:
+ax_lc.plot(t_arr[:len(lumin_bol)]/year, lumin_bol, label='original')
+ax_lc.plot(t_arr[:len(lumin_bol_lensed)]/year, lumin_bol_lensed, label='lensed')
+ax_lc.legend()
 
 # print the dip size ratio:
-print('dip size ratio = {:.4f}'.format(np.max(abs(lumin_bol_lensed_r))/np.max(abs(lumin_bol_r))))
+print('dip size ratio = {:.4f}'.format(np.max(abs(lumin_bol_lensed))/np.max(abs(lumin_bol))))
 
 # return time to run
 stop = timeit.default_timer()

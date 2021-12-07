@@ -36,8 +36,8 @@ def lens(image_s, rc, eps, dom=1):
     j_arr = np.arange(0, size, 1)
     
     # get reduced coords. r_1 and r_2 as arrays and mesh into grids
-    r1 = 2*dom*i_arr/(size-1) - dom
-    r2 = 2*dom*j_arr/(size-1) - dom
+    r1 = 2*dom*i_arr/(size) - dom + p_width/2
+    r2 = 2*dom*j_arr/(size) - dom + p_width/2
     r1g, r2g = np.meshgrid(r1, r2)
     
     # use lens equation to get positions on image_s
