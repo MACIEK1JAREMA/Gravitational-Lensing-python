@@ -179,7 +179,7 @@ for t_index in range(len(t_arr)):
             # get x and y from these relative to star centre
             x = -size_s + i
             y = -size_s + j
-            # check if current point is outside the ellipse:
+            # check if current point is outside the circle:
             if (x/size_s)**2 + (y/size_s)**2 > 1:
                 pass
             else:
@@ -195,7 +195,7 @@ for t_index in range(len(t_arr)):
             # get x and y from these relative to planet centre
             x = -size_p + i
             y = -size_p + j
-            # check if current point is outside the ellipse:
+            # check if current point is outside the circle:
             if (x/size_p)**2 + (y/size_p)**2 > 1:
                 pass
             else:
