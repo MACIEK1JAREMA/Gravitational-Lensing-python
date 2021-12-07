@@ -23,8 +23,8 @@ def lens(image_s, rc, eps, dom=1):
     if len(image_s[:, 0, 0]) == len(image_s[0, :, 0]):
         size = len(image_s)
     else:
-        raise IndexError(' Image must be square, can\'t broadcast with different shapes')
-
+        raise TypeError(' Image must be square, can\'t broadcast with different shapes')
+    
     # set up an empty array to store lensed image
     image_l = np.zeros([size, size, 3])
     p_width = 2*dom/(size)  # width of each pixel
@@ -51,7 +51,7 @@ def lens(image_s, rc, eps, dom=1):
     index_2 = index_2.astype(int).transpose()  # and tranpose to match directions
     
     # copy the data from source image at these indexes over to lens image array
-    image_l[:, :, :] = image_s[index_1, index_2, :]
+    image_l[:, :, :] += image_s[index_1, index_2, :]
     
     # return the image to the suer
     return image_l
