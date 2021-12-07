@@ -11,93 +11,113 @@ import timeit
 # start the timer
 start = timeit.default_timer()
 
-# set the seed for repeatable results
-np.random.seed(34563)
-
 # set up some initial parameters
 rc = 0.2
 eps = 0
-size = 800
-dom = 2  # abs() of domain of r values (normally -1, 1 --> 1)
-max_a = 0.4  # maximum galaxy scale-length, in pixels
-minor_max = 21  # max minor axis in pixels
-gal_N = 40  # number of galaxies to generate in source image
+size = 2048
+dom = 3  # abs() of domain of r values (normally -1, 1 --> 1)
+max_a = 0.32  # maximum galaxy scale-length, in pixels
+minor_max = 80  # max minor axis in pixels
+gal_N = 70  # number of galaxies to generate in source image
 
 # ############################################################################
 # Generate a random galaxy cluser
 # ############################################################################
 
-# randomly generate the galaxy properties
-
-# randomly generate f_0 in each RGB band, make sure these are integers
-# put these in a tuple to append to the pixel
-f0r = np.random.randint(0, 255, gal_N)
-f0g = np.random.randint(0, 255, gal_N)
-f0b = np.random.randint(0, 255, gal_N)
-f0 = np.vstack((f0r, f0g, f0b))
-
-# randomly generate a centre pixel indexes
-x_centr, y_centr = np.random.randint(0, size, gal_N), np.random.randint(0, size, gal_N)
-
-# randomly generate a, in units of pixels:
-a = np.random.rand(gal_N) * max_a
-
-# randomly generate minor and major axis
-minor = np.random.randint(1, minor_max+1, gal_N)
-# major is larger than minor, therefore generate for each corr. minor
-major = []
-for g in range(gal_N):
-    maj_dummy = np.random.randint(minor[g], 5*minor_max)
-    major.append(maj_dummy)
-
-major = np.array(major)
-
-# randomly generate angle of major axis to horizontal, in radians
-theta = np.random.rand(gal_N) * np.pi
-
-
+# define a function that will generate image of galaxy cluster
+# use numba jit to improve efficiency of used loops.
 @jit(nopython=True)
-def calc_image(x_centr, y_centr, major, minor, size, theta, f0, gal_N, a):
+def calc_image(gal_N, size, max_a, minor_max, minor_major_multiplier=5, seeded=1234):
+    '''
+    Generates a pixelated image of galaxies
     
-    # begin an empty source image array, with RGB
+    Parameters:
+    ---------------
+        gal_N - int - number of galaxies
+        size - int - side length of square image to create
+        max_a - float - maximum decay costant for flux, in pixels
+        minor_max - int - maximum semi-minor axis size, in pixels
+        
+    kwargs:
+    ---------------
+        minor_major_multiplier - int - max ratio between minor and major axis
+    
+    returns:
+    ---------------
+    image, as size x size x 3 array
+    
+    '''
+    
+    # set the seed for repeatable results
+    np.random.seed(seeded)
+    
+    # randomly generate galaxy properties:
+
+    # fluxes in each RGB band (inetegers), as tuple to append to the pixels
+    f0r = np.random.randint(0, 255, gal_N)
+    f0g = np.random.randint(0, 255, gal_N)
+    f0b = np.random.randint(0, 255, gal_N)
+    f0 = np.vstack((f0r, f0g, f0b))
+    
+    # pixel center indexes
+    x_centr, y_centr = np.random.randint(0, size, gal_N), np.random.randint(0, size, gal_N)
+    
+    # decay a, unit = pixels:
+    a = np.random.rand(gal_N) * max_a
+    
+    # minor axis
+    minor = np.random.randint(1, minor_max+1, gal_N)
+    
+    # angle of major axis to horizontal (radians)
+    theta = np.random.rand(gal_N) * np.pi
+    
+    # begin empty source image array
     image = np.zeros((size, size, 3))
     
+    # precalculate costly functions for all values at once
     cosine = np.cos(theta)
     sine = np.sin(theta)
-
+    
     # loop over generating each galaxy with these properties
     for gal in range(gal_N):
-        # loop ver all values in square of side length = major
-        for i in range(2*major[gal]+1):
-            # get x from i
-            x = -major[gal] + i
-            for j in range(2*major[gal]+1):
-                # get y from j 
-                y = -major[gal] + j
-                # get rotation transformed coordinates
+        # get major axis, here to ensure major > minor
+        major = np.random.randint(minor[gal], minor_major_multiplier*minor_max)
+        
+        # loop ver all values in square (i and j) of side length = major
+        for i in range(2*major+1):
+            # get x rel. to center
+            x = -major + i
+            
+            for j in range(2*major+1):
+                # get y rel. to center
+                y = -major + j
+                
+                # rotation transformed coordinates
                 xp = x*cosine[gal] - y*sine[gal]
                 yp = x*sine[gal] + y*cosine[gal]
-                # check if current point is outside the ellipse:
-                if (xp/minor[gal])**2 + (yp/major[gal])**2 > 1:
-                    pass
-                else:
-                    # its in ellipse, add its pixel data accordinly
-                    if (x_centr[gal]+i >= 0 and x_centr[gal]+i < size) and ((y_centr[gal]+j >= 0 and y_centr[gal]+j < size)):  # careful about image edges
-                        image[x_centr[gal]+i, y_centr[gal]+j, :] += (f0[:, gal] * np.exp(-np.sqrt((xp/minor[gal])**2 + ((yp/major[gal])**2))/a[gal]))                                     
+                
+                # check if current point is inside the ellipse and add its pixel data accordinly
+                # careful about image edges
+                if (xp/minor[gal])**2 + (yp/major)**2 <= 1 and (x_centr[gal]+i >= 0 and x_centr[gal]+i < size) and (y_centr[gal]+j >= 0 and y_centr[gal]+j < size):
+                    image[x_centr[gal]+i, y_centr[gal]+j, :] += (f0[:, gal] * np.exp(-np.sqrt((xp/minor[gal])**2 + ((yp/major)**2))/a[gal]))
+                    # correct for rollover:
+                    for check in range(3):
+                        if image[x_centr[gal]+i, y_centr[gal]+j, check] > 255:
+                            image[x_centr[gal]+i, y_centr[gal]+j, check] = 255
+    
+    # return image to user
     return image
 
 
-
-image = calc_image(x_centr, y_centr, major, minor, size, theta, f0, gal_N, a)
-
-# start the timer
+# start the timer for function
 start_f = timeit.default_timer()
 
-image = calc_image(x_centr, y_centr, major, minor, size, theta, f0, gal_N, a)
+image = calc_image(gal_N, size, max_a, minor_max, minor_major_multiplier=4, seeded=143)
 
-# return time to run
+# return time to run the function
 stop_f = timeit.default_timer()
 print('Time to generate source image was: {:.4f}'.format(stop_f - start_f) + ' s')
+print('\n')
 
 # ############################################################################
 # Lens and present the  end result
