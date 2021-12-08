@@ -1,4 +1,4 @@
-# changing the animation of 2 body motion to be in pixels, with objects
+# changing the animation of 2 body motion to be in pixels
 # that have physical extent
 
 # import modules

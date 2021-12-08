@@ -1,14 +1,15 @@
-# planet + star lensing, investigation for possible correlation
+# planet + star lensing, investigation
+# and use of classes
 
 # import modules
 import numpy as np
 import matplotlib.pyplot as plt
-from PIL import Image
 import scipy
 from scipy import integrate
 import project.lensing_function as lensing
-import matplotlib.widgets as widgets
-from scipy.signal import find_peaks
+import project.codes_physical.functions.class_2body as bodies
+import project.codes_physical.functions.draw_sphere as pix_draw
+from numba import jit
 import timeit
 
 # %%
@@ -16,83 +17,42 @@ import timeit
 # start the timer
 start = timeit.default_timer()
 
-# start up an empty source image and lensing parametrers
-size = 200
+# start up lensing parametrers and constants
+size = 400
 eps = 0
 rc = 0.1
-dom = 5
+dom = 4
+year = 3.156e7
+G = 6.67e-11
+maxR = 1.496e11  # AU in SI
+size_source = 4e11  # size of the source plane
+p_width = size_source/size  # get pixel size to scale down
 
 # set up simualtion time parameters
-year = 3.156e7  # numerical factor
 t_max = 1 * year
-t_number = 400
+t_number = 300
+t_arr = np.linspace(0, t_max, t_number)
+dt = t_arr[-1] - t_arr[-2]
 
-# set up 2 body system parameters in SI
-M = 2e30
-m = 6e24
-G = 6.67e-11
-maxR = 1.496e11  # max planet disp from star, in SI
+# set up 2 body system parameters in SI, using imported classes:
+Star = bodies.body_def(Mass=2e30, size=40, x=0, y=0, vx=0, vy=0)  # Star
+Planet = bodies.body_def(Mass=6e24, size=12, x=maxR, y=0, vx=0, vy=-29800)  # Planet
 
-# define star and planet sizes in pixels:
-size_s = 20
-size_p = 6
-size_source = 4e11  # size of the source plane
-
-# from size of max orbit get pixel size to scale down
-p_width = size_source/size
-
-# set initial parameters of the 2 bodies in SI
-xs = 0
-ys = 0
-xp = maxR
-yp = 0
-vxs = 0
-vys = 0
-vxp = 0
-vyp = -29800
-
-init_cond = [xs, ys, xp, yp, vxs, vys, vxp, vyp]  # put into a list
-
+# Merge them into a system:
+system = bodies.system_def(Star, Planet)
+system.initials()  # produce initial conditions in system instance
 
 # #############################################################################
 # simulation of 2 bodies orbiting in plane, for centre positions
 # #############################################################################
-
-# get time array and needed values
-t_arr = np.linspace(0, t_max, t_number)
-dt = t_arr[-1] - t_arr[-2]
 
 # initialise the lists that will store integrated, bolometric 'luminosity'
 # for both transit data and lensed transit
 lumin_bol = []
 lumin_bol_lensed = []
 
-# set up a fucntion for odeint to use to get needed derivatives
-def jacob(y, x):
-    # set up an empty list to store derivaitves:
-    derivs = np.zeros_like(y)
-    
-    # deal with substitution derivatives:
-    derivs[0] = y[4]
-    derivs[1] = y[5]
-    derivs[2] = y[6]
-    derivs[3] = y[7]
-    
-    # get the distance between the bodies
-    dist = np.sqrt((y[0] - y[2])**2 + (y[1] - y[3])**2)
-    
-    # deal with equation dependant derivatives, from N2L and N grav. law. in 1D
-    derivs[4] = -(G*m/dist**3) * (y[0] - y[2])
-    derivs[5] = -(G*m/dist**3) * (y[1] - y[3])
-    derivs[6] = -(G*M/dist**3) * (y[2] - y[0])
-    derivs[7] = -(G*M/dist**3) * (y[3] - y[1])
-    
-    # return to odeint:
-    return derivs
-
-
 # call odeint to solve it:
-solution = scipy.integrate.odeint(jacob, init_cond, t_arr)
+solution = scipy.integrate.odeint(system.jacobian_get, system.init, t_arr)
 
 # from it extract wanted positions
 xs_anim = solution[:, 0]
@@ -119,9 +79,9 @@ for t_index in range(len(t_arr)):
     # get the current x values for planet and star
     x = [xs_anim[t_index], xp_anim[t_index]]
     
-    # scale down to domain and find which pixels these lie in
+    # scale down to domain and find which x pixels these lie in
     # NB y index is always half way up
-    index_s = np.floor((x[0] + size_source/2)/p_width)
+    index_s = np.floor((x[0] + size_source/2)/p_width) - 1
     index_p = np.floor((x[1] + size_source/2)/p_width) - 1  # zero-indexing
     index_s = index_s.astype(int).transpose() # change them to integers
     index_p = index_p.astype(int).transpose()
@@ -130,52 +90,18 @@ for t_index in range(len(t_arr)):
     pfront = True
     
     # check which body is in front when in line, using the y data:
-    if abs(index_s + size_s) > abs(index_p - size_p) and abs(index_s - size_s) < abs(index_p + size_p):
+    if abs(index_s + Star.size) > abs(index_p - Planet.size) and abs(index_s - Star.size) < abs(index_p + Planet.size):
         if yp_anim[t_index] < ys_anim[t_index]:
             pfront = False
-        elif yp_anim[t_index] > ys_anim[t_index]:
-            pfront = True
-        else:
-            pass
-    else:
-        pass
     
-    # draw on the star as a big, yellow circle:
-    for i in range(2*size_s+1):
-        for j in range(2*size_s+1):
-            # get x and y from these relative to star centre
-            x = -size_s + i
-            y = -size_s + j
-            # check if current point is outside the ellipse:
-            if (x/size_s)**2 + (y/size_s)**2 > 1:
-                pass
-            else:
-                # its in ellipse, add its pixel data accordinly
-                try:  # careful about image edges
-                    image_s[int(size/2) - size_s + i, index_s  - size_s + j, :] += tuple((255, 255, 255))
-                except IndexError:
-                    pass
+    # draw on the star as a big, yellow circle, using above defined
+    # function, sped up bu numba jit
+    image_s = pix_draw.draw_sphere(Star.size, image_s, index_s, (255, 255, 255))
     
-    # draw on the planet as a smaller, dark circle:
-    for i in range(2*size_p+1):
-        for j in range(2*size_p+1):
-            # get x and y from these relative to planet centre
-            x = -size_p + i
-            y = -size_p + j
-            # check if current point is outside the ellipse:
-            if (x/size_p)**2 + (y/size_p)**2 > 1:
-                pass
-            else:
-                # its in ellipse, add its pixel data accordinly
-                try:  # careful about image edges
-                    # check if overcasting the sun:
-                    if pfront:
-                        image_s[int(size/2) - size_p + i, index_p - size_p + j, :] = tuple((0, 0, 0))
-                    else:
-                        pass
-                except IndexError:
-                    pass
-    
+    # draw on the planet as a smaller, dark circle, if not behind star
+    if pfront:
+        image_s = pix_draw.draw_sphere(Planet.size, image_s, index_p, (30, 30, 30))
+
     # save the luminosities into the list
     lumin_bol.append(np.sum(image_s/255))
     
