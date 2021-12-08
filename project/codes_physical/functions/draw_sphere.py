@@ -42,7 +42,6 @@ def draw_sphere(body_size, image_s, index, color):
     return image_s
 
 
-
 # define a function that will generate image of galaxy cluster
 # use numba jit to improve efficiency of used loops.
 @jit(nopython=True)
