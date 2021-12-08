@@ -123,7 +123,7 @@ def binary_len(displacements, axis, size, t_arr, p_width, maxR, sizes, sizep, ep
                     pfront = False
             
             # draw on the star as a big, white circle, use prepared function.
-            image_s = pix_draw.draw_sphere(Star.size, image_s, index_s, (255, 25, 255))
+            image_s = pix_draw.draw_sphere(Star.size, image_s, index_s, (230, 230, 230))
             
             # draw on the planet as a smaller, dark circle, if not behind star
             if pfront:
@@ -170,27 +170,27 @@ start = timeit.default_timer()
 # #############################################################################
 
 # start up an empty source image and lensing parametrers
-size = 200
+size = 300
 eps = 0
 rc = 0.15
 dom = 6
 year = 3.156e7
 maxR = 1e11  # AU in SI
 size_source = 2e11  # size of the source plane
-size_star = 10
-size_pl = 7
+size_star = 15
+size_pl = 10
 
 # get pixel size to scale down from full animation to reduced coords
 p_width = size_source/size
 
 # set up simualtion time parameters
-t_max = 0.25 * year
+t_max = 0.2 * year
 t_number = 500
 t_arr = np.linspace(0, t_max, t_number)
 dt = t_arr[-1] - t_arr[-2]
 
 # run the fucnction for a few test deisplacements
-disps = [0, maxR/50, maxR/40, maxR/20]
+disps = [0, maxR/50, maxR/30, maxR/20]
 
 # #############################################################################
 # set up visuals, run fucntion and plot results
@@ -198,7 +198,7 @@ disps = [0, maxR/50, maxR/40, maxR/20]
 
 fig = plt.figure(figsize=(12, 5))
 axis = []
-y_lim = [800, 4600]
+y_lim = [2000, 15000]
 
 # automatic axis set up:
 for a in range(1, len(disps)+1):
