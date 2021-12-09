@@ -2,9 +2,7 @@
 
 # import modules
 import numpy as np
-import matplotlib
 import matplotlib.pyplot as plt
-from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 import timeit
 
 # %%
@@ -55,9 +53,6 @@ ax.set_xlabel(r'$x \ pixel \ index$')
 ax.set_ylabel(r'$y \ pixel \ index$')
 ax.set_xticks(np.arange(0, size+1, 5))
 ax.set_yticks(np.arange(0, size+1, 5))
-# add a scale bar:
-#scalebar = AnchoredSizeBar(ax.transData, 5, r'$5r_{c}$', 'lower left', pad=0.1, color='white', frameon=False)
-#ax.add_artist(scalebar)
 
 # plot the resulting image onto that plot
 ax.imshow(image_l)

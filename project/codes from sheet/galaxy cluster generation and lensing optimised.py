@@ -25,8 +25,6 @@ gal_N = 70  # number of galaxies to generate in source image
 # Generate a random galaxy cluser, lens and plot
 # ############################################################################
 
-
-
 # start the timer for function
 start_f = timeit.default_timer()
 

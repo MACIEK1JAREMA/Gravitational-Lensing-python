@@ -32,7 +32,7 @@ for disp in range(-disp_max, disp_max+1, 1):
     # set up an image of the source, with 1 pixel, at displaced position
     image_s = np.zeros([size, size, 3])
     #image_s[int((size-1)/2), int((size-1)/2) + disp, 0] = 1  # keep one commented
-    image_s[int((size-1)/2) + disp, int((size-1)/2) + disp, 0] = 1
+    image_s[int((size-1)/2) + disp, int((size-1)/2), 0] = 1
     p_width = 2*dom/(size)  # width of each pixel
     
     # set up an empty array to store lensed image

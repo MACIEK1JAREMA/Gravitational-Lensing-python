@@ -176,7 +176,7 @@ year = 3.156e7
 maxR = 1.49e11  # AU in SI
 size_source = 2.5e11  # size of the source plane
 size_star = 18
-size_pl = 10
+size_pl = 6
 
 # get pixel size to scale down from full animation to reduced coords
 p_width = size_source/size

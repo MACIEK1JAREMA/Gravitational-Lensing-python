@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 from skimage.measure import label, regionprops
 import project.lensing_function as lensing
+import project.codes_physical.functions.draw_sphere as pix_draw
 import timeit
 
 # %%
@@ -29,26 +30,9 @@ eps_arr = np.linspace(0, 1, eps_N)
 # set up a total luminosity list to store it for each ellipticity
 lum_arr = []
 
-# set up the source image, with centred, circular source:
+# set up the source image, with centred, circular source, use written function
 image_s = np.zeros([size, size, 3])
-for i in range(2*size_obj+1):
-    for j in range(2*size_obj+1):
-        # get x and y from these relative to star centre
-        x = -size_obj + i
-        y = -size_obj + j
-        # check if current point is outside the circle:
-        if (x/size_obj)**2 + (y/size_obj)**2 > 1:
-            pass
-        else:
-            # its in ellipse, add its pixel data accordinly
-            try:  # careful about image edges
-                image_s[int(size/2) - size_obj + i, int(size/2) - size_obj + j, :] += tuple((1, 0, 0))
-            except IndexError:
-                pass
-
-# show image:
-#plt.imshow(image_s)  # no /255 to easily see R=1, easier debug this way
-
+image_s = pix_draw.draw_sphere(size_obj, image_s, int(size/2), (255, 255, 255))
 
 # loop over changing ellipticity, for each, lens and get total intensity:
 for epsilon in eps_arr:

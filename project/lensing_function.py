@@ -51,7 +51,7 @@ def lens(image_s, rc, eps, dom=1):
     index_2 = index_2.astype(int).transpose()  # and tranpose to match directions
     
     # copy the data from source image at these indexes over to lens image array
-    image_l[:, :, :] += image_s[index_1, index_2, :]
+    image_l[:, :, :] += image_s[index_1, index_2, :]        
     
     # return the image to the suer
     return image_l

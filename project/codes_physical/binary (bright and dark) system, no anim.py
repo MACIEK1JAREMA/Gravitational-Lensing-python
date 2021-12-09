@@ -33,7 +33,7 @@ size_source = 2.5e11  # size of the source plane, in SI distacnes
 p_width = size_source/size
 
 # set up simualtion time parameters
-t_max = 0.3 * year
+t_max = 0.7 * year
 t_number = 500
 t_arr = np.linspace(0, t_max, t_number)
 dt = t_arr[-1] - t_arr[-2]
