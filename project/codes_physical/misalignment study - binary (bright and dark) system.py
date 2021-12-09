@@ -19,7 +19,6 @@ import timeit
 # do so in a fucntion to speed it up with numba
 #@jit(nopython=True)
 def binary_len(displacements, axis, size, t_arr, p_width, maxR, sizes, sizep, eps=0, rc=0.15, dom=6):
-    global G
     '''
     Lenses a binary system of two objects, of equal mass, one big and bright,
     one smaller and dark. Calculates the Light curve and returns it to user
@@ -61,8 +60,7 @@ def binary_len(displacements, axis, size, t_arr, p_width, maxR, sizes, sizep, ep
     # from p_width and size, get size of whole plane in SI
     size_source = p_width * size
     
-    # define constants and axis index counter
-    G = 6.67e-11  # global for odeint to access
+    # axis index counter
     axc = 0
     
     # set up an array to store Light curves
@@ -119,7 +117,7 @@ def binary_len(displacements, axis, size, t_arr, p_width, maxR, sizes, sizep, ep
             # initial checker: (if planet is in front when in line of star), using the y data
             pfront = True
             if abs(index_s + Star.size) > abs(index_p - Planet.size) and abs(index_s - Star.size) < abs(index_p + Planet.size):
-                if yp_anim[t_index] < ys_anim[t_index]:
+                if yp_anim[t_index] > ys_anim[t_index]:
                     pfront = False
             
             # draw on the star as a big, white circle, use prepared function.
@@ -170,21 +168,21 @@ start = timeit.default_timer()
 # #############################################################################
 
 # start up an empty source image and lensing parametrers
-size = 300
+size = 200
 eps = 0
 rc = 0.15
 dom = 6
 year = 3.156e7
-maxR = 1e11  # AU in SI
-size_source = 2e11  # size of the source plane
-size_star = 15
+maxR = 1.49e11  # AU in SI
+size_source = 2.5e11  # size of the source plane
+size_star = 18
 size_pl = 10
 
 # get pixel size to scale down from full animation to reduced coords
 p_width = size_source/size
 
 # set up simualtion time parameters
-t_max = 0.2 * year
+t_max = 0.55 * year
 t_number = 500
 t_arr = np.linspace(0, t_max, t_number)
 dt = t_arr[-1] - t_arr[-2]
@@ -196,9 +194,9 @@ disps = [0, maxR/50, maxR/30, maxR/20]
 # set up visuals, run fucntion and plot results
 # #############################################################################
 
-fig = plt.figure(figsize=(12, 5))
+fig = plt.figure(figsize=(15, 4))
 axis = []
-y_lim = [2000, 15000]
+y_lim = [2000, 11000]
 
 # automatic axis set up:
 for a in range(1, len(disps)+1):
@@ -224,7 +222,7 @@ plt.tight_layout()  # fit subplots to fig
 
 # extract the two later peaks (affected by planet) and get their height ratios
 for run in range(len(disps)):
-    exec('ratio' + str(run) + ' = (L_maxima[' + str(run) + '][0, 1] - lc[' + str(run) + '][0]) / (L_maxima[' + str(run) + '][0, 2] - lc[' + str(run) + '][0])' )
+    exec('ratio' + str(run) + ' = (L_maxima[' + str(run) + '][0, 0] - lc[' + str(run) + '][0]) / (L_maxima[' + str(run) + '][0, 1] - lc[' + str(run) + '][0])' )
     exec('print(\'ratio of second peak to third peak for run \' + str(run) + \' was {:.5f}\'.format(ratio' + str(run) + '))')
 
 # return time to run

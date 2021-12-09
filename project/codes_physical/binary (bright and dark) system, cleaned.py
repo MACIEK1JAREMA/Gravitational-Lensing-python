@@ -33,22 +33,21 @@ eps = 0
 rc = 0.15
 dom = 6
 year = 3.156e7
-G = 6.67e-11
-maxR = 1e11  # AU in SI
-size_source = 2e11  # size of the source plane
+maxR = 1.49e11  # AU in SI
+size_source = 2.5e11  # size of the source plane, in SI distacnes
 
 # get pixel size to scale down from full animation to reduced coords
 p_width = size_source/size
 
 # set up simualtion time parameters
-t_max = 1 * year
+t_max = 0.3 * year
 t_number = 500
 t_arr = np.linspace(0, t_max, t_number)
 dt = t_arr[-1] - t_arr[-2]
 
 # set up 2 body system parameters in SI, using imported classes:
-Star = bodies.body_def(Mass=2e30, size=10, x=-maxR/2, y=0, vx=0, vy=20000)  # Star
-Planet = bodies.body_def(Mass=2e30, size=7, x=maxR/2, y=0, vx=0, vy=-20000)  # Planet
+Star = bodies.body_def(Mass=2e30, size=18, x=-maxR/2, y=0, vx=0, vy=20000)  # Star
+Planet = bodies.body_def(Mass=2e30, size=10, x=maxR/2, y=0, vx=0, vy=-20000)  # Planet
 
 # Merge them into a system:
 system = bodies.system_def(Star, Planet)
@@ -71,7 +70,6 @@ xp_anim = solution[:, 2]
 
 ys_anim = solution[:, 1]
 yp_anim = solution[:, 3]
-
 
 # #############################################################################
 # Animation with pixel placement
@@ -123,7 +121,7 @@ for t_index in range(len(t_arr)):
     # initial checker: (if planet is in front when in line of star), using the y data
     pfront = True
     if abs(index_s + Star.size) > abs(index_p - Planet.size) and abs(index_s - Star.size) < abs(index_p + Planet.size):
-        if yp_anim[t_index] < ys_anim[t_index]:
+        if yp_anim[t_index] > ys_anim[t_index]:
             pfront = False
     
     # draw on the star as a big, white circle, use prepared function.
@@ -138,7 +136,7 @@ for t_index in range(len(t_arr)):
     lumin_bol.append(np.sum(image_lens/255))
     
     # plot the lensed image and the new time
-    ax.imshow(image_lens/255)
+    ax.imshow(image_s/255)
     ax_time.text(0.01, 0.2, 'time = {:.2f} yrs'.format(t_arr[t_index]/year))
     
     # check the quit command:
@@ -164,17 +162,21 @@ peak_indexes = find_peaks(lumin_bol, height=1)[0]
 lum_maxima = lumin_bol[peak_indexes]
 ax_lc.plot(t_arr[peak_indexes]/year, lum_maxima, 'r*')
 
-# find the ratio of their heights and print to user
-for i in range(int(np.floor(len(lum_maxima)/2))):
-    if i % 2 == 0:
-        print(lum_maxima[2*i]/lum_maxima[2*i + 1])
-    else:
-        print(lum_maxima[2*i+1]/lum_maxima[2*i])
+# find the ratio affected peak's heights and return
+ratio = (lum_maxima[0] - lumin_bol[0])/(lum_maxima[1] - lumin_bol[0])
+print(ratio)
 
 
 # %%
 
 # Extra plots for tests.
+
+#for i in range(int(np.floor(len(lum_maxima)/2))):
+#    if i % 2 == 0:
+#        print(lum_maxima[2*i]/lum_maxima[2*i + 1])
+#    else:
+#        print(lum_maxima[2*i+1]/lum_maxima[2*i])
+
 
 # for all time find the CoM position in x and plot to check
 # should not change from 0
@@ -186,6 +188,8 @@ for i in range(int(np.floor(len(lum_maxima)/2))):
 #ax_cm.plot(x_cm)
 
 # plot the motion of the two objects in the x-y plane
-#plt.figure()
-#plt.plot(xs_anim, ys_anim)
-#plt.plot(xp_anim, yp_anim)
+plt.figure()
+plt.plot(xs_anim, ys_anim)
+plt.plot(xp_anim, yp_anim)
+
+
