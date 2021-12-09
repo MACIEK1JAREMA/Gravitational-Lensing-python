@@ -41,7 +41,7 @@ t_number = 500
 t_arr = np.linspace(0, t_max, t_number)
 dt = t_arr[-1] - t_arr[-2]
 
-difference_lst = []
+ratio_lst = []
 
 for planetsize in range(1, 10):
     # set up 2 body system parameters in SI, using imported classes:
@@ -109,31 +109,29 @@ for planetsize in range(1, 10):
         image_lens = lensing.lens(image_s, rc, eps, dom)
         lumin_bol.append(np.sum(image_lens/255))
     
-    
-    # set up a figure, axis and visuals for the light curve
-    fig_lc = plt.figure()
-    ax_lc = fig_lc.gca()
-    ax_lc.set_xlabel('time [years]')
-    ax_lc.set_ylabel(r'$L_{bol} [RGB \ sum]$')
-    
-    # plot the obtained light curve:
-    ax_lc.plot(t_arr[:len(lumin_bol)]/year, lumin_bol)
-    
     # from the found L_{bol} extract the positions of peaks and plot these on:
     lumin_bol = np.array(lumin_bol)
     peak_indexes = find_peaks(lumin_bol, height=1)[0]
     lum_maxima = lumin_bol[peak_indexes]
-    ax_lc.plot(t_arr[peak_indexes]/year, lum_maxima, 'r*')
     
     # find minima too:
     min_indexes = argrelextrema(lumin_bol, np.less)
     lum_minima = lumin_bol[min_indexes]
-    ax_lc.plot(t_arr[min_indexes]/year, lum_minima, 'g*')
     
     # get difference:
-    difference = lum_maxima[-1] - lum_minima[0]
-    print(difference)
-    difference_lst.
+    ratio = (lum_maxima[-1] - min(lum_minima))/lum_maxima[-1]
+    print(ratio)
+    ratio_lst.append(ratio)
+
+
+fig = plt.figure()
+ax = fig.gca()
+ax.plot(np.arange(1, 10, 1), ratio_lst)
+
+# get its avergae gradient and error
+grad = np.gradient(np.array(ratio_lst))
+grad_m = np.mean(grad)
+grad_std = np.std(grad)
 
 # return time to run
 stop = timeit.default_timer()

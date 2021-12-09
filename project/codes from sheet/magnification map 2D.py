@@ -86,17 +86,16 @@ def count_rbgs(results):
     return results
 
 
-
 # %%
 
 # start the timer
 start = timeit.default_timer()
 
 # set up some initial parameters
-rc = 0.2
+rc = 0
 eps = 0
-size = 180
-dom = 2  # abs() of domain of r values (normally -1, 1 --> 1)
+size = 100
+dom = 3  # abs() of domain of r values (normally -1, 1 --> 1)
 
 # set up a figure and subplot axis
 fig = plt.figure(figsize=(9, 9))
@@ -123,14 +122,14 @@ ax2.set_aspect('equal')
 
 ax3.set_xlabel(r'$x \ pixel \ index$')
 ax3.set_ylabel(r'$y \ pixel \ index$')
-ax3.set_title(r'$ magnification \ map \ on \ log\ scale $')
+ax3.set_title(r'$ magnification \ map \ on \ linear \ scale $')
 ax3.set_xticks(np.arange(0, size+1, 20))
 ax3.set_yticks(np.arange(0, size+1, 20))
 ax3.set_aspect('equal')
 
 ax4.set_xlabel(r'$x \ pixel \ index$')
 ax4.set_ylabel(r'$y \ pixel \ index$')
-ax4.set_title(r'$ magnification \ map \ on \ linear \ scale $')
+ax4.set_title(r'$ magnification \ map \ on \ log\ scale $')
 ax4.set_xticks(np.arange(0, size+1, 20))
 ax4.set_yticks(np.arange(0, size+1, 20))
 ax4.set_aspect('equal')
@@ -148,24 +147,21 @@ ax2.imshow(image_lensed/255)
 
 
 # now need to count how many of each RBG combinations appear:
-
-# array to store numbers of occurances of each marker
-results =  np.zeros([size, size])
+results =  np.zeros([size, size])  # array to store occurances of each marker
 results = count_rbgs(results)
 
 # for pcolormesh plot, set up x and y grids and plot it as log sclae color map
 x = np.arange(0, size, 1)
 y = np.arange(0, size, 1)
 xg, yg = np.meshgrid(x, y)
-indexes = np.where(results==0)  # set 0s to 0.001 to allow for log scaling to work
-results[indexes] = 0.01
-plot = ax3.pcolormesh(xg, yg, results, cmap=cm.jet, norm=LogNorm(0.01, results.max()))
+results += 1  # avoid log(0) errors
+plot = ax4.pcolormesh(xg, yg, results, cmap=cm.jet, norm=LogNorm(1, results.max()))
 
 # set a colourbar
 plt.colorbar(plot)
 
 # do the plot with imshow
-ax4.imshow(results)
+ax3.imshow(results)
 
 # return time to run
 stop = timeit.default_timer()

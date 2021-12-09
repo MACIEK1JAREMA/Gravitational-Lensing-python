@@ -80,8 +80,8 @@ for t_index in range(len(t_arr)):
     
     # scale down to domain and find which x pixels these lie in
     # NB y index is always half way up
-    index_s = np.floor((x[0] + size_source/2)/p_width) - 1
-    index_p = np.floor((x[1] + size_source/2)/p_width) - 1  # zero-indexing
+    index_s = np.floor((x[0] + size_source/2)/p_width)
+    index_p = np.floor((x[1] + size_source/2)/p_width)
     index_s = index_s.astype(int).transpose()  # change them to integers
     index_p = index_p.astype(int).transpose()  # and shape correctly
     

@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 from skimage.measure import label, regionprops
 import project.lensing_function as lensing
+from matplotlib.colors import LogNorm
 import timeit
 
 # %%
@@ -14,13 +15,13 @@ import timeit
 start = timeit.default_timer()
 
 # set up some initial parameters
-rc = 0.2
+rc = 0
 eps = 0
-dom = 1  # abs() of domain of r values (normally -1, 1 --> 1)
-size = 201
+dom = 3  # abs() of domain of r values (normally -1, 1 --> 1)
+size = 300
 
 # max number of pixels displacement
-disp_max = 30
+disp_max = 50
 
 # set up an array to store ratio of perimeter to area in 2D
 ratio_arr = np.zeros((2*disp_max, 2*disp_max))
@@ -94,7 +95,7 @@ ax1.imshow(ratio_arr)
 # plot it on log sclae using pcolormesh, this also needs grids
 disps = np.arange(-disp_max, disp_max+1)
 disps_xg, disps_yg = np.meshgrid(disps, disps)
-plot = ax2.pcolormesh(disps_xg, disps_yg, ratio_arr, cmap=cm.jet)
+plot = ax2.pcolormesh(disps_xg, disps_yg, 1+ratio_arr, cmap=cm.jet, norm=LogNorm(1, ratio_arr.max()))
 plt.colorbar(plot)  # set a colourbar
 
 

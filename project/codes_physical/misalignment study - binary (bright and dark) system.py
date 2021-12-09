@@ -66,8 +66,9 @@ def binary_len(displacements, axis, size, t_arr, p_width, maxR, sizes, sizep, ep
     # set up an array to store Light curves
     light_curves = []
     
-    # set up an array to store peaks for each disp
+    # set up an array to store peaks for each disp (then same for min)
     maxima = []
+    minima = []
     
     for com_disp in displacements:
         # set up 2 body system parameters in SI, using imported classes:
@@ -109,8 +110,8 @@ def binary_len(displacements, axis, size, t_arr, p_width, maxR, sizes, sizep, ep
             
             # scale down to domain and find which pixels these lie in
             # NB y index is always half way up
-            index_s = np.floor((x[0] + size_source/2)/p_width) - 1
-            index_p = np.floor((x[1] + size_source/2)/p_width) - 1  # zero-indexing
+            index_s = np.floor((x[0] + size_source/2)/p_width)
+            index_p = np.floor((x[1] + size_source/2)/p_width)
             index_s = index_s.astype(int).transpose() # change them to integers
             index_p = index_p.astype(int).transpose()
             
@@ -140,9 +141,17 @@ def binary_len(displacements, axis, size, t_arr, p_width, maxR, sizes, sizep, ep
         lum_maxima = lumin_bol[peak_indexes]
         axis[axc].plot(t_arr[peak_indexes]/year, lum_maxima, 'r*')
         
+        min_indexes = find_peaks(-lumin_bol + lumin_bol[0])[0]
+        lum_minima = lumin_bol[min_indexes]
+        lum_to_del_index = np.where(lum_minima == (sorted(lum_minima)[0]))
+        lum_minima[lum_to_del_index] = np.nan
+        
+        axis[axc].plot(t_arr[min_indexes]/year, lum_minima, 'g*')
+        
         # append data to lists to return to user
         light_curves.append(lumin_bol)
         maxima.append(np.vstack((lum_maxima, peak_indexes)))
+        minima.append(np.vstack((lum_minima, min_indexes)))
         
         # update axis index counter
         axc += 1
@@ -154,7 +163,7 @@ def binary_len(displacements, axis, size, t_arr, p_width, maxR, sizes, sizep, ep
         #    else:
         #        print(lum_maxima[2*i+1]/lum_maxima[2*i])
 
-    return axis, light_curves, maxima
+    return axis, light_curves, maxima, minima
 
 
 # %%
@@ -175,8 +184,8 @@ dom = 6
 year = 3.156e7
 maxR = 1.49e11  # AU in SI
 size_source = 2.5e11  # size of the source plane
-size_star = 18
-size_pl = 6
+size_star = 20
+size_pl = 7
 
 # get pixel size to scale down from full animation to reduced coords
 p_width = size_source/size
@@ -194,9 +203,9 @@ disps = [0, maxR/50, maxR/30, maxR/20]
 # set up visuals, run fucntion and plot results
 # #############################################################################
 
-fig = plt.figure(figsize=(15, 4))
+fig = plt.figure(figsize=(16, 5))
 axis = []
-y_lim = [2000, 11000]
+y_lim = [2000, 13000]
 
 # automatic axis set up:
 for a in range(1, len(disps)+1):
@@ -212,7 +221,7 @@ for a in range(1, len(disps)+1):
 
 
 # run the function to get all light curves
-axis_ret, lc, L_maxima = binary_len(disps, axis, size, t_arr, p_width, maxR, size_star, size_pl, eps, rc, dom)
+axis_ret, lc, L_maxima, L_minima = binary_len(disps, axis, size, t_arr, p_width, maxR, size_star, size_pl, eps, rc, dom)
 
 plt.tight_layout()  # fit subplots to fig
 
@@ -222,8 +231,9 @@ plt.tight_layout()  # fit subplots to fig
 
 # extract the two later peaks (affected by planet) and get their height ratios
 for run in range(len(disps)):
-    exec('ratio' + str(run) + ' = (L_maxima[' + str(run) + '][0, 0] - lc[' + str(run) + '][0]) / (L_maxima[' + str(run) + '][0, 1] - lc[' + str(run) + '][0])' )
-    exec('print(\'ratio of second peak to third peak for run \' + str(run) + \' was {:.5f}\'.format(ratio' + str(run) + '))')
+    exec('ratio' + str(run) + ' = (L_maxima[' + str(run) + '][0, -1] - min(L_minima[' + str(run) + '][0, :])) / L_maxima[' + str(run) + '][0, -1]' )
+    exec('print(\'ratio of main peak to main dip for run \' + str(run) + \' was {:.5f}\'.format(ratio' + str(run) + '))')
+
 
 # return time to run
 stop = timeit.default_timer()

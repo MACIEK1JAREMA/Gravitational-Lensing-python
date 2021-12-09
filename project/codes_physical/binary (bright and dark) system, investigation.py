@@ -35,8 +35,8 @@ size_source = 2.5e11  # size of the source plane, in SI distacnes
 p_width = size_source/size
 
 # set up simualtion time parameters
-t_max = 0.7 * year
-t_number = 500
+t_max = 0.6 * year
+t_number = 600
 t_arr = np.linspace(0, t_max, t_number)
 dt = t_arr[-1] - t_arr[-2]
 
@@ -57,7 +57,7 @@ system.initials()  # produce initial conditions in system instance
 lumin_bol = []
 
 # call odeint to solve it:
-solution = scipy.integrate.odeint(system.jacobian_get, system.init, t_arr)
+solution = scipy.integrate.odeint(system.jacobian_get, system.init, t_arr, rtol=1e-10)
 
 # from it extract wanted positions
 xs_anim = solution[:, 0]
@@ -66,6 +66,8 @@ xp_anim = solution[:, 2]
 ys_anim = solution[:, 1]
 yp_anim = solution[:, 3]
 
+plt.plot(xs_anim, ys_anim)
+plt.plot(xp_anim, yp_anim)
 
 # #############################################################################
 # Animation with pixel placement
@@ -83,8 +85,8 @@ for t_index in range(len(t_arr)):
     
     # scale down to domain and find which pixels these lie in
     # NB y index is always half way up
-    index_s = np.floor((x[0] + size_source/2)/p_width) - 1
-    index_p = np.floor((x[1] + size_source/2)/p_width) - 1  # zero-indexing
+    index_s = np.floor((x[0] + size_source/2)/p_width)
+    index_p = np.floor((x[1] + size_source/2)/p_width)
     index_s = index_s.astype(int).transpose() # change them to integers
     index_p = index_p.astype(int).transpose()
     
@@ -127,8 +129,9 @@ lum_minima = lumin_bol[min_indexes]
 ax_lc.plot(t_arr[min_indexes]/year, lum_minima, 'g*')
 
 # find the ratio between peak when only sun is lensed and dip when planet transits and return
-ratio =  (lum_maxima[-1] - lum_minima[0])/lum_maxima[-1]
-print(ratio)
+ratio = (lum_maxima[-1] - min(lum_minima))/lum_maxima[-1]
+print('found size ratio was: {:.5f}'.format(ratio))
+print('The true ratio is {:.5f}'.format(7/20))
 
 # return time to run
 stop = timeit.default_timer()
