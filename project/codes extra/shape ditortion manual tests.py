@@ -1,6 +1,6 @@
 '''
 
-Reproduction of test image, optimised by vectorising
+TESTING
 
 @author: Maciej Tomasz Jarema ppymj11
 
@@ -17,19 +17,17 @@ import timeit
 start = timeit.default_timer()
 
 # set up some initial parameters, as instrucetd on the sheet
-rc = 0.7
+rc = 0.2
 eps = 0
-size = 201
+size = 401  # odd
 dom = 1  # abs() of domain of r values (normally -1, 1 --> 1)
+
+
+disp = 20
 
 # set up image arrays. Source is single pixel at centre. Lensed is empty now
 image_s = np.zeros([size, size, 3])
-
-if size % 2 == 1:  # deal with odd and even size images
-    image_s[int((size-1)/2), int((size-1)/2), 0] = 1
-else:
-    # no centre, set middle 4 pixels
-    image_s[int((size)/2)-1 : int((size)/2)+1, int((size)/2)-1 : int((size)/2)+1, 0] = 1
+image_s[int((size-1)/2) + disp, int((size-1)/2), 0] = 1
 
 image_l = np.zeros([size, size, 3])
 p_width = 2*dom/(size)  # get width of each pixel
@@ -66,26 +64,13 @@ image_l[:, :, :] = image_s[index_1, index_2, :]
 # start a figure and customise visuals
 fig = plt.figure()
 ax = fig.gca()
-ax.set_xlabel(r'$x \ pixel \ index$', fontsize=16)
-ax.set_ylabel(r'$y \ pixel \ index$', fontsize=16)
-ax.tick_params(labelsize=16)
+ax.set_xlabel(r'$x \ pixel \ index$')
+ax.set_ylabel(r'$y \ pixel \ index$')
 ax.set_xticks(np.arange(0, size+1, int(size/5)))
 ax.set_yticks(np.arange(0, size+1, int(size/5)))
 
 # plot the resulting image onto that plot
 ax.imshow(image_l)
-
-# set up a arrays for a circle of correct radius
-theta = np.linspace(0, 2*np.pi, 1000)
-r = np.sqrt(1-rc**2)
-x = r*np.cos(theta)
-y = r*np.sin(theta)
-
-# scale (backwards) from reduced coordinates and plot with labels
-xr = (x + dom) * (size-1) / (2*dom)
-yr = (y + dom) * (size-1) / (2*dom)
-ax.plot(xr, yr, 'y-', label='expected ring size')
-ax.legend(fontsize=16)
 
 # return time to run
 stop = timeit.default_timer()

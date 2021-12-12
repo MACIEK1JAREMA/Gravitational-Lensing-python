@@ -23,8 +23,8 @@ start = timeit.default_timer()
 # set up some initial parameters
 rc = 0
 eps = 0
-size = 100
-dom = 3  # abs() of domain of r values (normally -1, 1 --> 1)
+size = 300
+dom = 2  # abs() of domain of r values (normally -1, 1 --> 1)
 
 # set up a figure and subplot axis
 fig = plt.figure(figsize=(9, 9))

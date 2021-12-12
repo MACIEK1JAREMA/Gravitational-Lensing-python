@@ -44,7 +44,7 @@ plt.sca(ax)
 plt.xticks([])  # take off the axis ticks for both, no need for images
 plt.yticks([])
 
-N_step = 60
+N_step = 40
 
 # loop over updating the offset (in pixels) and finding the lensed image
 for motion in np.linspace(int(size/2), int(size), N_step):

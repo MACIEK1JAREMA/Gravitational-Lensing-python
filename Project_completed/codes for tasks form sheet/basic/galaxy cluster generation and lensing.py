@@ -6,9 +6,12 @@ Lensing a generated galaxy cluster
 
 '''
 
+import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.font_manager as fonts
 import Project_completed.modules.lensing_function as lensing
 import Project_completed.modules.draw_pixels as pix_draw
+from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 import timeit
 
 # %%
@@ -64,6 +67,13 @@ ax1.imshow(image/255)
 # plot the lensed image
 image_lens = lensing.lens(image, rc, eps, dom)
 ax2.imshow(image_lens/255)
+
+# add a scale bar:
+ring_size = np.sqrt(1-rc**2) - dom
+ring_reduced = (ring_size + dom) * (size-1) / (2*dom)
+font = fonts.FontProperties(size=16)
+scalebar = AnchoredSizeBar(ax2.transData, ring_reduced, r'$r_{ring}$', 'lower left', pad=0.1, color='white', fontproperties=font, frameon=False)
+ax2.add_artist(scalebar)
 
 # return time to run
 stop = timeit.default_timer()
