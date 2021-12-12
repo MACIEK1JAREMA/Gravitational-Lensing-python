@@ -1,4 +1,6 @@
 # Scientific computing project - gravitational lensing
+
+## Introduction
 ***
 In this project I investigate a simplified model of gravitational lenses.
 This work provides a tool for investigating strong lensing effects caused by planar,  smooth and transparent mass distrivutions on a veriety of background objects.
@@ -21,10 +23,10 @@ The same is the done for 2 bodies of comparable masses but much different lumino
 #### License: [MIT](https://choosealicense.com/licenses/mit/)
 
 ## Table of Contents
-1. [How to run](#How-to-run)
-2. [Figures](#Figures)
-3. [Choice of parameters](#Choice-of-parameters)
-4. [times to run and used optimisations](#times-to-run-and-used-optimisations)
+1. [How to run](##How-to-run)
+2. [Figures](##Figures)
+3. [Choice of parameters](##Choice-of-parameters)
+4. [Used optimisations](##Used-optimisations)
 
 ## How to run
 To begin with, in order to run the presented code, a python interpreter is required (preferably spyder, as images may not show in VScode until plt.show() is included). The interpreter must be set to display figures automatically and not 'in-line'.
@@ -48,10 +50,26 @@ It is worth noting that this code only produces one figure, of set parameters, t
 #### Figure 2
 Figure 2 was produced by running the file named: 'galaxy cluster generation and lensing .py'. This image is produced in a single run of the code.
 
+Note that most of the code for this is modularised.
+
+The generation of galaxies occurs through a module I have written (in Project_completed.modules) called 'draw_pxiels', with a fucntion called: 'gal_image'.
+The lensing occurs through a function I have written in file named 'lensing_function' in 'Project_completed.modules' with function called 'lens'.
+
 #### Figure 3
+Produced by running file named: 'Jpg image lensing' from 'Project_completed\codes for tasks from sheet\advanced', produced in a single run of the code.
+Again, the lensing is completed by the modularised fucntion (lens)
+
+The image is supplied in the 'Project_completed' file, and holds no copyright, it is my own image of Messier 65.
+
+A simulation of the lensing object being moved onto the jpg image has also been produced and can be found in the same file, named 'jpg movie'.
 
 
+#### Figure 4
+Produced by running file named: 'ellipticity' from 'Project_completed\additional codes', produced in a single run of the code. The lines linking inset plots to their original positions have been input in image post processing. It is possible to add them in code, but it was omitted.
+Again, the lensing is completed by the modularised fucntion (lens) and plotting a spherical source is done by a function 'draw_sphere' from file 'pix_draw' imported from 'Project_completed.modules.draw_pxiels'.
 
+#### Figure 5
+NOT YET DONE, NEED TOCHECK MAGNIFICATION RESULTS
 
 ## Choice of parameters
 
@@ -90,5 +108,30 @@ time to run (from restarted kernel) ~ 2.7s
 
 
 ### Figure 3
+    rc = 0
+    eps = 0
+    dom = 2
+    image path: 'Project_completed\\my image M65.jpg'
+    image size (extracted, not input parameter) : 1121
+time to run (from restarted kernel) ~ 0.3s
 
+
+### Figure 4
+    rc = 0.2
+    dom = 4
+    size = 600
+    size_obj = 60
+    eps_N = 300
+    eps tested in range (0, 1)
+
+
+### Figure 5
+
+NOT YET DONE, NEED TO CHECK RESULTS MORE!
+
+### Figure 6
+
+
+
+## Used optimisations
 

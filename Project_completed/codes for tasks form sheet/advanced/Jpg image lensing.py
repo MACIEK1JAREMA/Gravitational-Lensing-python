@@ -11,6 +11,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import Project_completed.modules.lensing_function as lensing
 from PIL import Image
+from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
+import matplotlib.font_manager as fonts
 import timeit
 
 # %%
@@ -19,7 +21,7 @@ import timeit
 start = timeit.default_timer()
 
 # set up lensing parameters
-rc = 0.3
+rc = 0
 eps = 0
 dom = 2  # abs() of domain of r values (normally -1, 1 --> 1)
 
@@ -50,6 +52,13 @@ image_l = lensing.lens(image_s, rc, eps, dom)
 # correct for RGB going range 0, 1 for imshow and plot
 image_l *= 1/256
 ax2.imshow(image_l)
+
+# add a scale bar:
+ring_size = np.sqrt(1-rc**2) - dom
+ring_reduced = (ring_size + dom) * (size-1) / (2*dom)
+font = fonts.FontProperties(size=16)
+scalebar = AnchoredSizeBar(ax2.transData, ring_reduced, r'$r_{ring} ~ ' + '{:.1f}$'.format(np.sqrt(1-rc**2)), 'lower left', pad=0.1, color='white', fontproperties=font, frameon=False)
+ax2.add_artist(scalebar)
 
 # return time to run
 stop = timeit.default_timer()

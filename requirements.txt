@@ -1,5 +1,6 @@
 numpy
 matplotlib
+mpl_toolkits (from matplotlib)
 scipy
 numba
 timeit
