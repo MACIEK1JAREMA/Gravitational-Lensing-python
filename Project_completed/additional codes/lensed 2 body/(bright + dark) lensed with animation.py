@@ -161,16 +161,6 @@ ax_lc.set_ylabel(r'$L_{bol} [RGB \ sum]$')
 # plot the obtained light curve:
 ax_lc.plot(t_arr[:len(lumin_bol)]/year, lumin_bol)
 
-# from the found L_{bol} extract the positions of peaks and plot these on:
-lumin_bol = np.array(lumin_bol)
-peak_indexes = find_peaks(lumin_bol, height=1)[0]
-lum_maxima = lumin_bol[peak_indexes]
-ax_lc.plot(t_arr[peak_indexes]/year, lum_maxima, 'r*')
-
-# find the ratio affected peak's heights and return
-ratio = (lum_maxima[0] - lumin_bol[0])/(lum_maxima[1] - lumin_bol[0])
-print(ratio)
-
 
 # %%
 
@@ -189,5 +179,15 @@ ax_cm.plot(x_cm)
 plt.figure()
 plt.plot(xs_anim, ys_anim)
 plt.plot(xp_anim, yp_anim)
+
+# from the found L_{bol} extract the positions of peaks and plot these on:
+lumin_bol = np.array(lumin_bol)
+peak_indexes = find_peaks(lumin_bol, height=1)[0]
+lum_maxima = lumin_bol[peak_indexes]
+ax_lc.plot(t_arr[peak_indexes]/year, lum_maxima, 'r*')
+
+# find the ratio affected peak's heights and return
+ratio = (lum_maxima[0] - lumin_bol[0])/(lum_maxima[1] - lumin_bol[0])
+print(ratio)
 
 

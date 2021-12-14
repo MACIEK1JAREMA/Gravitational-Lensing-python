@@ -20,10 +20,10 @@ import timeit
 start = timeit.default_timer()
 
 # set up some initial parameters
-rc = 0.2
+rc = 0
 eps = 0
-size = 401
-dom = 5  # abs() of domain of r values (normally -1, 1 --> 1)
+size = 301
+dom = 2  # abs() of domain of r values (normally -1, 1 --> 1)
 p_width = 2*dom/(size)  # width of each pixel
 
 # max number of pixels displacement from centre
@@ -55,7 +55,10 @@ for disp in range(-disp_max, disp_max+1, 1):
     # find the perimeter of the new shape:
     image_shape = image_l[:, :, 0] != 0
     region = regionprops(image_shape.astype(int))
-    perim = region[0].perimeter
+    if len(region) == 0:
+        perim = 0
+    else:
+        perim = region[0].perimeter
     
     # find the ratio of area to perimeter of it and append to list
     ratio = perim/nonzero_number

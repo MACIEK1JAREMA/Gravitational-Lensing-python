@@ -17,6 +17,7 @@ import timeit
 
 # %%
 
+
 # start the timer
 start = timeit.default_timer()
 
@@ -38,29 +39,29 @@ ax4 = fig.add_subplot(224)
 ax1.set_xlabel(r'$x \ pixel \ index$')
 ax1.set_ylabel(r'$y \ pixel \ index$')
 ax1.set_title(r'$ image \ of \ pixels \ marked \ in \ RGB $')
-ax1.set_xticks(np.arange(0, size+1, 20))
-ax1.set_yticks(np.arange(0, size+1, 20))
+ax1.set_xticks(np.arange(0, size+1, int(size/5)))
+ax1.set_yticks(np.arange(0, size+1, int(size/5)))
 ax1.set_aspect('equal')
 
 ax2.set_xlabel(r'$x \ pixel \ index$')
 ax2.set_ylabel(r'$y \ pixel \ index$')
 ax2.set_title(r'$ lensed \ image \ of \ marked \ pixels $')
-ax2.set_xticks(np.arange(0, size+1, 20))
-ax2.set_yticks(np.arange(0, size+1, 20))
+ax2.set_xticks(np.arange(0, size+1, int(size/5)))
+ax2.set_yticks(np.arange(0, size+1, int(size/5)))
 ax2.set_aspect('equal')
 
 ax3.set_xlabel(r'$x \ pixel \ index$')
 ax3.set_ylabel(r'$y \ pixel \ index$')
 ax3.set_title(r'$ magnification \ map \ on \ linear \ scale $')
-ax3.set_xticks(np.arange(0, size+1, 20))
-ax3.set_yticks(np.arange(0, size+1, 20))
+ax3.set_xticks(np.arange(0, size+1, int(size/5)))
+ax3.set_yticks(np.arange(0, size+1, int(size/5)))
 ax3.set_aspect('equal')
 
 ax4.set_xlabel(r'$x \ pixel \ index$')
 ax4.set_ylabel(r'$y \ pixel \ index$')
 ax4.set_title(r'$ magnification \ map \ on \ log\ scale $')
-ax4.set_xticks(np.arange(0, size+1, 20))
-ax4.set_yticks(np.arange(0, size+1, 20))
+ax4.set_xticks(np.arange(0, size+1, int(size/5)))
+ax4.set_yticks(np.arange(0, size+1, int(size/5)))
 ax4.set_aspect('equal')
 
 
