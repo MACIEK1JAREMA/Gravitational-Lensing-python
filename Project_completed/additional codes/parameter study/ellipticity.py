@@ -23,7 +23,7 @@ start = timeit.default_timer()
 rc = 0.2
 dom = 4  # abs() of domain of r values (normally -1, 1 --> 1)
 size = 600
-size_obj = 60
+size_obj = 30
 eps = 0  # initial
 eps_N = 300
 
@@ -55,9 +55,9 @@ for epsilon in eps_arr:
 # set up fiugre and axis:
 fig = plt.figure()
 ax = fig.gca()
-ax.tick_params(labelsize=16)
-ax.set_xlabel(r'$\epsilon$', fontsize=18)
-ax.set_ylabel(r'$ Fractional \ Luminosity \ change \ (L_{bol, lens} \ - \ L_{bol, init}) \ / \ L_{bol, init}$', fontsize=18)
+ax.tick_params(labelsize=18)
+ax.set_xlabel(r'$\epsilon$', fontsize=20)
+ax.set_ylabel(r'$ Fractional \ Luminosity \ change \ (L_{bol, lens} \ - \ L_{bol, init}) \ / \ L_{bol, init}$', fontsize=20)
 
 # plot fractional bol lum change (after - intial)/initial , against used epsilon
 delta_L = (lum_arr - np.sum(image_s)/255)/(np.sum(image_s)/255)
