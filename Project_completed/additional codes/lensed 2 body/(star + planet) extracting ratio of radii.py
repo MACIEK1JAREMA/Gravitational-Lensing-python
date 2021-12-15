@@ -24,9 +24,9 @@ import timeit
 start = timeit.default_timer()
 
 # start up lensing parametrers and constants
-size = 400
+size = 800
 eps = 0
-rc = 0.1
+rc = 0
 dom = 4
 year = 3.156e7
 maxR = 1.496e11  # AU in SI
