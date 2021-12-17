@@ -19,7 +19,7 @@ start = timeit.default_timer()
 # set up some initial parameters, as instrucetd on the sheet
 rc = 0.7
 eps = 0
-size = 201
+size = 21
 dom = 1  # abs() of domain of r values (normally -1, 1 --> 1)
 
 # set up image arrays. Source is single pixel at centre. Lensed is empty now

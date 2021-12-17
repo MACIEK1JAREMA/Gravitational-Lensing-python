@@ -25,44 +25,40 @@ start = timeit.default_timer()
 rc = 0
 eps = 0
 size = 300
-dom = 2  # abs() of domain of r values (normally -1, 1 --> 1)
+dom = 2  # abs() of domain of r values (eg. -1, 1 --> 1)
 
 # set up a figure and subplot axis
-fig = plt.figure(figsize=(9, 9))
+fig = plt.figure(figsize=(20, 9))
 fig.tight_layout()
-ax1 = fig.add_subplot(221)
-ax2 = fig.add_subplot(222)
-ax3 = fig.add_subplot(223)
-ax4 = fig.add_subplot(224)
+ax1 = fig.add_subplot(131)
+ax2 = fig.add_subplot(132)
+ax3 = fig.add_subplot(133)
+plt.subplots_adjust(left=0.05, bottom=0.05, right=0.95, top=0.95, wspace=None, hspace=None)
 
 # set up visuals for each axis set
-ax1.set_xlabel(r'$x \ pixel \ index$')
-ax1.set_ylabel(r'$y \ pixel \ index$')
-ax1.set_title(r'$ image \ of \ pixels \ marked \ in \ RGB $')
+ax1.tick_params(labelsize=20)
+ax1.set_xlabel(r'$x \ pixel \ index$', fontsize=20)
+ax1.set_ylabel(r'$y \ pixel \ index$', fontsize=20)
+ax1.set_title(r'$ image \ of \ pixels \ marked \ in \ RGB $', fontsize=20)
 ax1.set_xticks(np.arange(0, size+1, int(size/5)))
 ax1.set_yticks(np.arange(0, size+1, int(size/5)))
 ax1.set_aspect('equal')
 
-ax2.set_xlabel(r'$x \ pixel \ index$')
-ax2.set_ylabel(r'$y \ pixel \ index$')
-ax2.set_title(r'$ lensed \ image \ of \ marked \ pixels $')
+ax2.tick_params(labelsize=20)
+ax2.set_xlabel(r'$x \ pixel \ index$', fontsize=20)
+ax2.set_ylabel(r'$y \ pixel \ index$', fontsize=20)
+ax2.set_title(r'$ lensed \ image \ of \ marked \ pixels $', fontsize=20)
 ax2.set_xticks(np.arange(0, size+1, int(size/5)))
 ax2.set_yticks(np.arange(0, size+1, int(size/5)))
 ax2.set_aspect('equal')
 
-ax3.set_xlabel(r'$x \ pixel \ index$')
-ax3.set_ylabel(r'$y \ pixel \ index$')
-ax3.set_title(r'$ magnification \ map \ on \ linear \ scale $')
+ax3.tick_params(labelsize=20)
+ax3.set_xlabel(r'$x \ pixel \ index$', fontsize=20)
+ax3.set_ylabel(r'$y \ pixel \ index$', fontsize=20)
+ax3.set_title(r'$ magnification \ map \ on \ log\ scale $', fontsize=20)
 ax3.set_xticks(np.arange(0, size+1, int(size/5)))
 ax3.set_yticks(np.arange(0, size+1, int(size/5)))
 ax3.set_aspect('equal')
-
-ax4.set_xlabel(r'$x \ pixel \ index$')
-ax4.set_ylabel(r'$y \ pixel \ index$')
-ax4.set_title(r'$ magnification \ map \ on \ log\ scale $')
-ax4.set_xticks(np.arange(0, size+1, int(size/5)))
-ax4.set_yticks(np.arange(0, size+1, int(size/5)))
-ax4.set_aspect('equal')
 
 
 # set up an empty array for image, initialise rbg margers and mark each pixel uniquely
@@ -85,13 +81,11 @@ x = np.arange(0, size, 1)
 y = np.arange(0, size, 1)
 xg, yg = np.meshgrid(x, y)
 results += 1  # avoid log(0) errors
-plot = ax4.pcolormesh(xg, yg, results, cmap=cm.jet, norm=LogNorm(1, results.max()))
+plot = ax3.pcolormesh(xg, yg, results, cmap=cm.jet, norm=LogNorm(1, results.max()))
 
 # set a colourbar
-plt.colorbar(plot)
-
-# do the plot with imshow
-ax3.imshow(results)
+cbar = plt.colorbar(plot, fraction=0.05)
+cbar.ax.tick_params(labelsize=20)
 
 # return time to run
 stop = timeit.default_timer()

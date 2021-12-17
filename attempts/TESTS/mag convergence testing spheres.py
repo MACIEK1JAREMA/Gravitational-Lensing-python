@@ -10,6 +10,7 @@ Convergence study of maximum mangification for central value with resolution
 import numpy as np
 import matplotlib.pyplot as plt
 import Project_completed.modules.lensing_function as lensing
+import Project_completed.modules.draw_pixels as pixdraw
 import timeit
 
 # %%
@@ -18,15 +19,15 @@ import timeit
 start = timeit.default_timer()
 
 # set up lensing parameters
-rc = 0
+rc = 0.7
 eps = 0
 dom = 1  # abs() of domain of r values (normally -1, 1 --> 1)
 
 # set the initial size and maximum. To conserve pixel size, will split each
 # at each step upto 'splits'
-initial_img = 3
-init_N = 3  # multpile of initial img
-N_max = 600
+initial_img = 21
+init_N = 21  # multpile of initial img
+N_max = 1400
 splits = N_max//init_N
 
 # set up array to store number of pixels for eahc of these:
@@ -48,53 +49,67 @@ for msplit in range(int(init_N/initial_img), splits):
     # reset the initial image
     image_s = np.zeros((N, N, 3))
     
+    # get 'half way' indicies for odd / even 
+    ho = int((N-1)/2)
+    he_o = int(((N/msplit) - 1)/2)  # for odd starting grids
+    he= int(N/(2*msplit))
+    
     # fill its middle in same range
-    if msplit == 1:
-        half = int((N-1)/2)
-        image_s[half, half, 0] = 1
-    elif msplit % 2 == 1:
-        half = int((N-1)/2)  # middle integer
-        spread = int((msplit-1)/2)  # range around to to inc in xoliured pixel
-        image_s[half-spread : half+spread, half-spread : half+spread, 0] = 1/(msplit**2)
-    else:
-        half = int(N/2)  # not middle index, but represntative
-        spread = int(msplit/2)  # spread around rep. middle
-        image_s[half-spread : half+spread, half-spread : half+spread, 0] = 1/(msplit**2)
+    if initial_img % 2 == 1:  # odd starting grids
+        if msplit == 1:
+            image_s[ho, ho, 0] = 1
+        elif msplit % 2 == 1:
+            spread = int((msplit-1)/2)  # range around to to inc in coloured pixel
+            image_s = pixdraw.draw_sphere()
+            image_s[ho-spread : ho+spread+1, ho-spread : ho+spread+1, 0] = 1/(msplit**2)
+        else:
+            spread = int(msplit)
+            image_s[he_o*msplit : he_o*msplit + msplit, he_o*msplit : he_o*msplit + msplit, 0] = 1/(msplit**2)
+    else:  # even starting grids
+        image_s[(he-1)*msplit:(he+1)*msplit, (he-1)*msplit:(he+1)*msplit, 0] = 1/(msplit**2)
     
     # lens it
     image_l = lensing.lens(image_s, rc, eps, dom)
     
     # find number of pixels this central value projected to
     N_end = np.sum(image_l)
-    
-    # append to lists to save data
-    N_ends.append(N_end)
+    N_ends.append(N_end/initial_img)
     sizes.append(N)
-    if msplit % 2 == 1:
-        odds.append(N_end)
-        odds_n.append(N)
+    
+    # appedn to odds and evens depending on orig image:
+    if initial_img % 2 == 1:
+        if msplit % 2 == 1:
+            odds.append(N_end/initial_img)
+            odds_n.append(N)
+        else:
+            evens.append(N_end/initial_img)
+            evens_n.append(N)
     else:
-        evens.append(N_end)
+        evens.append(N_end/initial_img)
         evens_n.append(N)
+        
     
     # save some figures for iset plots
     if msplit == 1:
         plt.figure()
-        plt.imshow(image_l)
-        image_save1 = image_s
+        plt.imshow(image_l*255)
+        image_save1 = image_l
     elif msplit == 2:
         plt.figure()
-        plt.imshow(image_l)
-        image_save2 = image_s
+        plt.imshow(image_l*255)
+        image_save2 = image_l
     elif msplit == 3:
         plt.figure()
-        plt.imshow(image_l)
-        image_save3 = image_s
-    elif msplit == 4:
+        plt.imshow(image_l*255)
+        image_save3 = image_l
+    elif msplit == splits-2:
         plt.figure()
-        plt.imshow(image_l)
-        image_save4 = image_s
-    
+        plt.imshow(image_l*1000)
+        image_saven2 = image_l
+    elif msplit == splits-1:
+        plt.figure()
+        plt.imshow(image_l*1000)
+        image_saven1 = image_l
 
 
 # set up figure, axia and visuals
@@ -104,19 +119,19 @@ ax2 = fig.add_subplot(122)
 ax1.set_xlabel(r'$N \ [pixels]$', fontsize=16)
 ax1.set_ylabel(r'$M \ = \ L_{f} \ / \ L_{i}$', fontsize=16)
 ax2.set_xlabel(r'$N$', fontsize=16)
-ax2.set_ylabel(r'$100 \ \delta M \ [% \ error]$', fontsize=16)
+ax2.set_ylabel(r'$100 \ \delta M \ [ \% \ error]$', fontsize=16)
 
 # plot
-ax1.plot(sizes, N_ends)
-ax1.plot(odds_n, odds)
-ax1.plot(evens_n, evens)
+#ax1.plot(sizes, N_ends, 'k')
+ax1.plot(odds_n, odds, 'r')
+ax1.plot(evens_n, evens, 'b')
 
 # magnification convergence value and its confidence interval
 
 # get fractional changes in magnification between each iteration
-change = (np.diff(N_ends) / N_ends[:-1])*100
-change_odd = (np.diff(odds) / odds[:-1])*100
-change_even = (np.diff(evens) / evens[:-1])*100
+change = abs((np.diff(N_ends) / N_ends[:-1])*100)
+change_odd = abs((np.diff(odds) / odds[:-1])*100)
+change_even = abs((np.diff(evens) / evens[:-1])*100)
 
 #ax2.plot(sizes[1:], change)
 ax2.plot(odds_n[1:], change_odd)
@@ -126,6 +141,8 @@ ax2.plot(evens_n[1:], change_even)
 ax2.plot(sizes[1:], np.ones(np.shape(sizes[1:])) * 1, 'g-.')
 ax2.plot(sizes[1:], np.ones(np.shape(sizes[1:])) * 2, 'r-.')
 
+
+# %%
 # print last results
 print('last value of magnification for odd images was: {:5f}'.format(odds[-1]))
 print('with error {:.2f} %'.format(abs(change_odd[-1])))

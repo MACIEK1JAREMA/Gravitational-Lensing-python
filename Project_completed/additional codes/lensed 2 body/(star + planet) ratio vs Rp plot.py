@@ -4,7 +4,7 @@ pixelated sun and earth in 2D orbit, projected to 1D and lensed, no animation
 can extract ratio of radii from lensed data and orig transit data
 from this, can see lensing effects on measurement.
 
-Here I investigate the imact on the ratio for a range of rc.
+Here I investigate the imact on the ratio of lensing by varying planet radius
 
 @author: Maciej Tomasz Jarema ppymj11
 
@@ -25,15 +25,13 @@ import timeit
 start = timeit.default_timer()
 
 # start up lensing parametrers and constants
-size = 300
+size = 400
+rc = 0
 eps = 0
 dom = 4
 year = 3.156e7
 maxR = 1.496e11  # AU in SI
 size_source = 4e11  # size of the source plane
-
-# set up rc array to test
-rcs = np.arange(0, 1, 0.1)
 
 # get pixel size to scale down from full animation to reduced coords
 p_width = size_source/size
@@ -44,9 +42,13 @@ t_number = 300
 t_arr = np.linspace(0, t_max, t_number)
 dt = t_arr[-1] - t_arr[-2]
 
+# set up Rp array to test
+star_size = 160
+P_radii = np.arange(1, star_size/2, 5).astype(int)
+
 # set up 2 body system parameters in SI, using imported classes:
-Star = bodies.body_def(Mass=2e30, size=40, x=0, y=0, vx=0, vy=0)  # Star
-Planet = bodies.body_def(Mass=6e24, size=12, x=maxR, y=0, vx=0, vy=-29800)  # Planet
+Star = bodies.body_def(Mass=2e30, size=star_size, x=0, y=0, vx=0, vy=0)  # Star
+Planet = bodies.body_def(Mass=6e24, size=P_radii[0], x=maxR, y=0, vx=0, vy=-29800)  # Planet
 
 # Merge them into a system:
 system = bodies.system_def(Star, Planet)
@@ -75,7 +77,7 @@ yp_anim = solution[:, 3]
 orig_ratios_lst = []
 lens_ratios_lst = []
 
-for rc in rcs:
+for rp in P_radii:
     
     # initialise the lists that will store integrated, bolometric 'luminosity'
     # for both transit data and lensed transit
@@ -114,6 +116,9 @@ for rc in rcs:
         image_lens = lensing.lens(image_s, rc, eps, dom)
         lumin_bol_lensed.append(np.sum(image_lens/255))
     
+    # upgrade the planet size
+    Planet.size_up()
+    
     
     # turn resulting lists into arrays to slice
     lumin_bol = np.array(lumin_bol)
@@ -127,15 +132,15 @@ for rc in rcs:
     orig_ratios_lst.append(np.sqrt(ratio_orig))
     lens_ratios_lst.append(np.sqrt(ratio_lens))
 
-# %%
 # set up a figure, axis and visuals for the light curves
 fig = plt.figure()
 ax = fig.gca()
-ax.set_xlabel('rc [pixels]', fontsize=18)
-ax.set_ylabel(r'$\frac{R_{p}}{R_{s}}$',fontsize=18)
-ax.plot(rcs, orig_ratios_lst, 'r-.', label='original')
-ax.plot(rcs, lens_ratios_lst, 'k', label='lensed')
-ax.legend()
+ax.tick_params(labelsize=20)
+ax.set_xlabel('Rp [pixels]', fontsize=20)
+ax.set_ylabel(r'$R_{p} \ / \ R_{s}$',fontsize=20)
+ax.plot(P_radii, orig_ratios_lst, 'r-.', label='original')
+ax.plot(P_radii, lens_ratios_lst, 'k', label='lensed')
+ax.legend(fontsize=20)
 
 # return time to run
 stop = timeit.default_timer()

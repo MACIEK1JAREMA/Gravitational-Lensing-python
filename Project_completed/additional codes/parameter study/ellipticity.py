@@ -55,9 +55,9 @@ for epsilon in eps_arr:
 # set up fiugre and axis:
 fig = plt.figure()
 ax = fig.gca()
-ax.tick_params(labelsize=18)
+ax.tick_params(labelsize=20)
 ax.set_xlabel(r'$\epsilon$', fontsize=20)
-ax.set_ylabel(r'$ Fractional \ Luminosity \ change \ (L_{bol, lens} \ - \ L_{bol, init}) \ / \ L_{bol, init}$', fontsize=20)
+ax.set_ylabel(r'$ Fractional \ Luminosity \ change \ (L_{b, l} \ - \ L_{b, i}) \ / \ L_{b, i}$', fontsize=20)
 
 # plot fractional bol lum change (after - intial)/initial , against used epsilon
 delta_L = (lum_arr - np.sum(image_s)/255)/(np.sum(image_s)/255)
@@ -65,7 +65,7 @@ ax.plot(eps_arr, delta_L, 'b-', lw=2)
 
 # plot insets with saved images
 d_eps = 0.7  # param to det size of inset in eps length-scales
-d_lum = delta_L[0]/5  # in lum length-scales
+d_lum = delta_L[0]/4  # in lum length-scales
 
 inset_start = ax.inset_axes([eps_arr[0] - d_eps/2 + d_eps/10, delta_L[0] - d_lum/2 - d_lum, d_eps, d_lum], transform=ax.transData)
 inset_start.set_yticks([])
@@ -90,7 +90,7 @@ inset_dec1.imshow(img_l_dec1)
 
 img_l_dec2 = lensing.lens(image_s, rc, 0.5, dom)/255
 mid_ind2 = int(np.argmin(np.abs(eps_arr - 0.5)))  # get its index
-inset_dec2 = ax.inset_axes([eps_arr[mid_ind2] - d_eps/2, delta_L[mid_ind2] - d_lum/2 - d_lum, d_eps, d_lum], transform=ax.transData)
+inset_dec2 = ax.inset_axes([eps_arr[mid_ind2] - d_eps/2, delta_L[mid_ind2] - d_lum/2 + 1.1*d_lum, d_eps, d_lum], transform=ax.transData)
 inset_dec2.set_yticks([])
 inset_dec2.set_xticks([])
 inset_dec2.imshow(img_l_dec2)

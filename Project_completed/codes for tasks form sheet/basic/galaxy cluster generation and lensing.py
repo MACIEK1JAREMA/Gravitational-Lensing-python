@@ -71,7 +71,7 @@ ax2.imshow(image_lens/255)
 # add a scale bar:
 ring_size = np.sqrt(1-rc**2) - dom
 ring_reduced = (ring_size + dom) * (size-1) / (2*dom)
-font = fonts.FontProperties(size=16)
+font = fonts.FontProperties(size=20)
 scalebar = AnchoredSizeBar(ax2.transData, ring_reduced, r'$r_{ring} ~ ' + '{:.2f}$'.format(np.sqrt(1-rc**2)), 'lower left', pad=0.1, color='white', fontproperties=font, frameon=False)
 ax2.add_artist(scalebar)
 

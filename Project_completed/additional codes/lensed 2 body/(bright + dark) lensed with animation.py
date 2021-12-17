@@ -33,7 +33,7 @@ def quit_resp(event):
 
 
 # start up an empty source image and lensing parametrers
-size = 200
+size = 400
 eps = 0
 rc = 0.15
 dom = 6

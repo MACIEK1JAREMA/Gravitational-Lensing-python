@@ -36,7 +36,7 @@ size_source = 4e11  # size of the source plane
 p_width = size_source/size
 
 # set up simualtion time parameters
-t_max = 1 * year
+t_max = 0.5 * year
 t_number = 300
 t_arr = np.linspace(0, t_max, t_number)
 dt = t_arr[-1] - t_arr[-2]
@@ -95,7 +95,7 @@ for t_index in range(len(t_arr)):
     # initial checker: (if planet is in front when in line of star), using the y data
     pfront = True
     if abs(index_s + Star.size) > abs(index_p - Planet.size) and abs(index_s - Star.size) < abs(index_p + Planet.size):
-        if yp_anim[t_index] < ys_anim[t_index]:
+        if yp_anim[t_index] > ys_anim[t_index]:
             pfront = False
     
     # draw on the star as a big, white circle, use prepared function.
@@ -103,7 +103,7 @@ for t_index in range(len(t_arr)):
     
     # draw on the planet as a smaller, dark circle, if not behind star
     if pfront:
-        image_s = pix_draw.draw_sphere(Planet.size, image_s, index_p, (30, 30, 30))
+        image_s = pix_draw.draw_sphere(Planet.size, image_s, index_p, (0, 0, 0))
 
     # save the luminosities into the list, lens, and save the new luminosities
     lumin_bol.append(np.sum(image_s/255))
@@ -118,17 +118,18 @@ for t_index in range(len(t_arr)):
 # set up a figure, axis and visuals for the light curves
 fig_lc = plt.figure()
 ax_lc = fig_lc.gca()
-ax_lc.set_xlabel('time [years]')
-ax_lc.set_ylabel(r'$L_{bol} [RGB \ sum]$')
+ax_lc.tick_params(labelsize=20)
+ax_lc.set_xlabel('time [years]', fontsize=20)
+ax_lc.set_ylabel(r'$L_{bol} [RGB \ sum]$', fontsize=20)
 
 # turn resulting lists into arrays to slice
 lumin_bol = np.array(lumin_bol)
 lumin_bol_lensed = np.array(lumin_bol_lensed)
 
 # plot the obtained light curves:
-ax_lc.plot(t_arr/year, lumin_bol, label='original')
 ax_lc.plot(t_arr/year, lumin_bol_lensed, label='lensed')
-ax_lc.legend()
+ax_lc.plot(t_arr/year, lumin_bol, label='original')
+ax_lc.legend(fontsize=20)
 
 # from dip sizes get Radii for each and print
 ratio_lens = (lumin_bol_lensed[0] - np.min(lumin_bol_lensed))/lumin_bol_lensed[0]

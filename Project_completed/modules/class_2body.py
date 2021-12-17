@@ -24,7 +24,14 @@ def body_def(Mass, size, x, y, vx, vy):
             self.size = size
             self.pos = [x, y]
             self.vel = [vx, vy]
-
+        
+        
+        def size_up(self):
+            '''
+            Increases body size by 1
+            '''
+            self.size += 1
+    
     # run the class and return the instance of it to user
     instance = body(Mass, size, x, y, vx, vy)
     return instance
