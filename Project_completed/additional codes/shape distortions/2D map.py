@@ -22,13 +22,13 @@ import timeit
 start = timeit.default_timer()
 
 # set up some initial parameters
-rc = 0.2
+rc = 0
 eps = 0
 dom = 1  # abs() of domain of r values (normally -1, 1 --> 1)
-size = 401
+size = 201
 
 # max number of pixels displacement
-disp_max = 100
+disp_max = 90
 
 # set up an array to store ratio of perimeter to area in 2D
 ratio_arr = np.zeros((2*disp_max, 2*disp_max))
@@ -75,36 +75,25 @@ for disp1 in range(-disp_max, disp_max+1, 1):
     # update j
     j += 1
 
+
 # set up a figure, axis
 fig = plt.figure()
-ax1 = fig.add_subplot(121)
-ax2 = fig.add_subplot(122)
+ax1 = fig.gca()
 
-# set up visuals for each axis
-ax1.set_xlabel(r'$x \ displacement \ in \ pixels$')
-ax1.set_ylabel(r'$y \ displacement \ in \ pixels$')
-ax1.set_title(r'$ shape \ distortions \ map $')
+# set up visuals for axis
+ax1.tick_params(labelsize=20)
+ax1.set_xlabel(r'$x \ displacement \ in \ pixels$', fontsize=20)
+ax1.set_ylabel(r'$y \ displacement \ in \ pixels$', fontsize=20)
 ax1.set_xticks(np.arange(0, size+1, 20))
 ax1.set_yticks(np.arange(0, size+1, 20))
 ax1.set_aspect('equal')
 
-ax2.set_xlabel(r'$x \ displacement \ in \ pixels$')
-ax2.set_ylabel(r'$y \ displacement \ in \ pixels$')
-ax2.set_title(r'$  shape \ distortions \ logarithmic \ map $')
-ax2.set_xticks(np.arange(0, size+1, 20))
-ax2.set_yticks(np.arange(0, size+1, 20))
-ax2.set_aspect('equal')
-
-
-# plot with imshow
-ax1.imshow(ratio_arr)
-
 # plot it on log sclae using pcolormesh, this also needs grids
 disps = np.arange(-disp_max, disp_max+1)
 disps_xg, disps_yg = np.meshgrid(disps, disps)
-plot = ax2.pcolormesh(disps_xg, disps_yg, 1+ratio_arr, cmap=cm.jet, norm=LogNorm(1, ratio_arr.max()))
-plt.colorbar(plot)  # set a colourbar
-
+plot = ax1.pcolormesh(disps_xg, disps_yg, 1+ratio_arr, cmap=cm.jet, norm=LogNorm(1, ratio_arr.max()))
+cbar = plt.colorbar(plot, fraction=0.05)
+cbar.ax.tick_params(labelsize=20)
 
 # return time to run
 stop = timeit.default_timer()

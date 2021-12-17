@@ -34,10 +34,10 @@ def quit_resp(event):
 
 
 # start up an empty source image and lensing parametrers
-size = 200
+size = 300
 eps = 0
-rc = 0.15
-dom = 6
+rc = 0
+dom = 4
 year = 3.156e7
 maxR = 1.49e11  # AU in SI
 size_source = 2.5e11  # size of the source plane, in SI distacnes
@@ -46,8 +46,8 @@ size_source = 2.5e11  # size of the source plane, in SI distacnes
 p_width = size_source/size
 
 # set up simualtion time parameters
-t_max = 1 * year
-t_number = 300
+t_max = 0.5 * year
+t_number = 200
 t_arr = np.linspace(0, t_max, t_number)
 dt = t_arr[-1] - t_arr[-2]
 

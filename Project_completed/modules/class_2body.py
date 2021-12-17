@@ -26,11 +26,11 @@ def body_def(Mass, size, x, y, vx, vy):
             self.vel = [vx, vy]
         
         
-        def size_up(self):
+        def size_change(self, new):
             '''
-            Increases body size by 1
+            Increases body size to newly chosen, as input, int
             '''
-            self.size += 1
+            self.size += new
     
     # run the class and return the instance of it to user
     instance = body(Mass, size, x, y, vx, vy)

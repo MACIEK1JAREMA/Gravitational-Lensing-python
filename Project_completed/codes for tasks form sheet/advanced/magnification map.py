@@ -24,7 +24,7 @@ start = timeit.default_timer()
 # set up some initial parameters
 rc = 0
 eps = 0
-size = 300
+size = 400
 dom = 2  # abs() of domain of r values (eg. -1, 1 --> 1)
 
 # set up a figure and subplot axis
@@ -39,7 +39,6 @@ plt.subplots_adjust(left=0.05, bottom=0.05, right=0.95, top=0.95, wspace=None, h
 ax1.tick_params(labelsize=20)
 ax1.set_xlabel(r'$x \ pixel \ index$', fontsize=20)
 ax1.set_ylabel(r'$y \ pixel \ index$', fontsize=20)
-ax1.set_title(r'$ image \ of \ pixels \ marked \ in \ RGB $', fontsize=20)
 ax1.set_xticks(np.arange(0, size+1, int(size/5)))
 ax1.set_yticks(np.arange(0, size+1, int(size/5)))
 ax1.set_aspect('equal')
@@ -47,7 +46,6 @@ ax1.set_aspect('equal')
 ax2.tick_params(labelsize=20)
 ax2.set_xlabel(r'$x \ pixel \ index$', fontsize=20)
 ax2.set_ylabel(r'$y \ pixel \ index$', fontsize=20)
-ax2.set_title(r'$ lensed \ image \ of \ marked \ pixels $', fontsize=20)
 ax2.set_xticks(np.arange(0, size+1, int(size/5)))
 ax2.set_yticks(np.arange(0, size+1, int(size/5)))
 ax2.set_aspect('equal')
@@ -55,7 +53,6 @@ ax2.set_aspect('equal')
 ax3.tick_params(labelsize=20)
 ax3.set_xlabel(r'$x \ pixel \ index$', fontsize=20)
 ax3.set_ylabel(r'$y \ pixel \ index$', fontsize=20)
-ax3.set_title(r'$ magnification \ map \ on \ log\ scale $', fontsize=20)
 ax3.set_xticks(np.arange(0, size+1, int(size/5)))
 ax3.set_yticks(np.arange(0, size+1, int(size/5)))
 ax3.set_aspect('equal')
@@ -77,8 +74,8 @@ results =  np.zeros([size, size])  # array to store occurances of each marker
 results = MSrgb.count_rbgs(results, image_lensed)
 
 # for pcolormesh plot, set up x and y grids and plot it as log sclae color map
-x = np.arange(0, size, 1)
-y = np.arange(0, size, 1)
+x = np.arange(0, size+1, 1)
+y = np.arange(0, size+1, 1)
 xg, yg = np.meshgrid(x, y)
 results += 1  # avoid log(0) errors
 plot = ax3.pcolormesh(xg, yg, results, cmap=cm.jet, norm=LogNorm(1, results.max()))

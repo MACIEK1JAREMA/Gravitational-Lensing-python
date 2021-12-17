@@ -91,8 +91,6 @@ for initial_img in np.arange(initial_img_start, initial_img_end, 10):
     Mag_evens.append(evens[-1])
     N_inis.append(init_N)
 
-# %%
-
 # set up figure, axis and visuals
 fig = plt.figure()
 ax1 = fig.add_subplot(121)
@@ -101,8 +99,8 @@ ax1.tick_params(labelsize=20)
 ax2.tick_params(labelsize=20)
 ax1.plot(N_inis, Mag_odds, label='odd sizes')
 ax1.plot(N_inis, Mag_evens, label='even sizes')
-ax1.set_xlabel('Initial grid size ' + r'$N_{i}$', fontsize=20)
-ax1.set_ylabel('Converged Magnification M', fontsize=20)
+ax1.set_xlabel(r'$N_{i}$', fontsize=20)
+ax1.set_ylabel('M', fontsize=20)
 ax1.legend(fontsize=20)
 
 ax2.plot(np.log10(N_inis), np.log10(Mag_odds), label='odd sizes')

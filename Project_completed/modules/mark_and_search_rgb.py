@@ -68,7 +68,7 @@ def count_rbgs(results, image_lensed):
         number = len(np.where((image_lensed[:, :, 0] == cR) & (image_lensed[:, :, 1] == cG) & (image_lensed[:, :, 2] == cB))[0])
         
         # store it in the corresponding pixel
-        results[countx, county] = number
+        results[county, countx] = number
         
         # update the checkers as before, in base 256
         if cB < 255:
@@ -89,7 +89,7 @@ def count_rbgs(results, image_lensed):
             county += 1
         
         # once all pixel combinations were checked, stop the loop
-        if countx == size-1 and county == size-1:
+        if countx == 0 and county == size:
             stop = True
     
     return results

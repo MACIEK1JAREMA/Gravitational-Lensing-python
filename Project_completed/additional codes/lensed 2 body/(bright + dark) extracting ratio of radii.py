@@ -26,7 +26,7 @@ import timeit
 start = timeit.default_timer()
 
 # start up an empty source image and lensing parametrers
-size = 300
+size = 600
 eps = 0
 rc = 0.15
 dom = 6
@@ -44,8 +44,8 @@ t_arr = np.linspace(0, t_max, t_number)
 dt = t_arr[-1] - t_arr[-2]
 
 # set up 2 body system parameters in SI, using imported classes:
-Star = bodies.body_def(Mass=2e30, size=40, x=-maxR/2, y=0, vx=0, vy=20000)  # Star
-Planet = bodies.body_def(Mass=2e30, size=20, x=maxR/2, y=0, vx=0, vy=-20000)  # Planet
+Star = bodies.body_def(Mass=2e30, size=60, x=-maxR/2, y=0, vx=0, vy=20000)  # Star
+Planet = bodies.body_def(Mass=2e30, size=18, x=maxR/2, y=0, vx=0, vy=-20000)  # Planet
 
 # Merge them into a system:
 system = bodies.system_def(Star, Planet)
@@ -114,8 +114,9 @@ for t_index in range(len(t_arr)):
 # set up a figure, axis and visuals for the light curve
 fig_lc = plt.figure()
 ax_lc = fig_lc.gca()
-ax_lc.set_xlabel('time [years]')
-ax_lc.set_ylabel(r'$L_{bol} [RGB \ sum]$')
+ax_lc.tick_params(labelsize=20)
+ax_lc.set_xlabel('time [years]', fontsize=20)
+ax_lc.set_ylabel(r'$L_{bol} [RGB \ sum]$', fontsize=20)
 
 # plot the obtained light curve:
 ax_lc.plot(t_arr[:len(lumin_bol)]/year, lumin_bol)
@@ -136,7 +137,7 @@ ax_lc.plot(t_arr[min_indexes]/year, lum_minima, 'g*')
 # find the ratio between peak when only sun is lensed and dip when planet transits and return
 ratio = (lum_maxima[-1] - min(lum_minima))/lum_maxima[-1]
 print('found size ratio was: {:.5f}'.format(ratio))
-print('The true ratio is {:.5f}'.format(40/20))
+print('The true ratio is {:.5f}'.format(18/60))
 
 # return time to run
 stop = timeit.default_timer()

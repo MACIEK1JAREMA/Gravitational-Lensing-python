@@ -37,14 +37,14 @@ size_source = 4e11  # size of the source plane
 p_width = size_source/size
 
 # set up simualtion time parameters
-t_max = 1 * year
+t_max = 0.6 * year
 t_number = 300
 t_arr = np.linspace(0, t_max, t_number)
 dt = t_arr[-1] - t_arr[-2]
 
 # set up Rp array to test
-star_size = 160
-P_radii = np.arange(1, star_size/2, 5).astype(int)
+star_size = 50
+P_radii = np.arange(3, 17, 2).astype(int)
 
 # set up 2 body system parameters in SI, using imported classes:
 Star = bodies.body_def(Mass=2e30, size=star_size, x=0, y=0, vx=0, vy=0)  # Star
@@ -68,16 +68,20 @@ xp_anim = solution[:, 2]
 ys_anim = solution[:, 1]
 yp_anim = solution[:, 3]
 
-
 # #############################################################################
 # from animated solution, get the pixelated images of the bodies
 # and light curves with and without gravitationally lensing
 # #############################################################################
 
+# set lists to store produced data
 orig_ratios_lst = []
 lens_ratios_lst = []
 
+# loop over transit frame with different R_p, collect light curves and get ratii
 for rp in P_radii:
+    
+    # upgrade the planet size
+    Planet.size_change(rp)
     
     # initialise the lists that will store integrated, bolometric 'luminosity'
     # for both transit data and lensed transit
@@ -101,7 +105,7 @@ for rp in P_radii:
         # initial checker: (if planet is in front when in line of star), using the y data
         pfront = True
         if abs(index_s + Star.size) > abs(index_p - Planet.size) and abs(index_s - Star.size) < abs(index_p + Planet.size):
-            if yp_anim[t_index] < ys_anim[t_index]:
+            if yp_anim[t_index] > ys_anim[t_index]:
                 pfront = False
         
         # draw on the star as a big, white circle, use prepared function.
@@ -109,16 +113,12 @@ for rp in P_radii:
         
         # draw on the planet as a smaller, dark circle, if not behind star
         if pfront:
-            image_s = pix_draw.draw_sphere(Planet.size, image_s, index_p, (30, 30, 30))
+            image_s = pix_draw.draw_sphere(Planet.size, image_s, index_p, (0, 0, 0))
     
         # save the luminosities into the list, lens, and save the new luminosities
         lumin_bol.append(np.sum(image_s/255))
         image_lens = lensing.lens(image_s, rc, eps, dom)
         lumin_bol_lensed.append(np.sum(image_lens/255))
-    
-    # upgrade the planet size
-    Planet.size_up()
-    
     
     # turn resulting lists into arrays to slice
     lumin_bol = np.array(lumin_bol)
@@ -131,6 +131,11 @@ for rp in P_radii:
     # save these to lists
     orig_ratios_lst.append(np.sqrt(ratio_orig))
     lens_ratios_lst.append(np.sqrt(ratio_lens))
+    
+    if rp == P_radii[-2]:
+        plt.figure()
+        plt.plot(np.arange(0, len(lumin_bol), 1), lumin_bol)
+
 
 # set up a figure, axis and visuals for the light curves
 fig = plt.figure()

@@ -71,8 +71,9 @@ disps = [i for i in range(-disp_max, disp_max+1, 1)]
 # set up a figre, axis and visuals
 fig = plt.figure()
 ax = fig.gca()
-ax.set_xlabel(r'$displacement \ from \ centre \ [pixels]$')
-ax.set_ylabel(r'$\frac{image \ object \ perimeter \ [pixels]}{image \ object \ area \ [pixels]}$')
+ax.tick_params(labelsize=20)
+ax.set_xlabel(r'$displacement \ from \ centre \ [pixels]$' , fontsize=20)
+ax.set_ylabel(r'$\frac{image \ object \ perimeter \ [pixels]}{image \ object \ area \ [pixels]}$', fontsize=20)
 
 # plot the resulting graph
 ax.plot(disps, ratio_list)
