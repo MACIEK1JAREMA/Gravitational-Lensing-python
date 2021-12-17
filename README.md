@@ -35,6 +35,8 @@ The libraries listed in the 'requirements.txt' file must also be installed.
 
 Furthermore, to run the code, the working directory must be set to this Githubs repository file.
 
+In the repository file, the fnished results, latest codes and the figure report of the project are all located in the file named 'Project_completed'.
+
 All the code files are structured such that the first cell comments on the files purpose in a comment and imports the modules.
 \
 The second cell is the main body of the code.
