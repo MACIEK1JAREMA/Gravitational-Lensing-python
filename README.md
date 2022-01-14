@@ -1,4 +1,4 @@
-# Scientific computing project - gravitational lensing
+# Strong Gravitational Lensing project - python
 
 ## Introduction
 ***
